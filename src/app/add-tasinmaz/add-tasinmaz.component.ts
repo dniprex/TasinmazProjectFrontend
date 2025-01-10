@@ -86,7 +86,7 @@ export class AddTasinmazComponent implements OnInit {
       (response) => {
         console.log('Taşınmaz başarıyla eklendi:', response);
         alert('Taşınmaz başarıyla eklendi!');
-        this.resetForm();
+        this.router.navigate(['/']);
       },
       (error) => {
         console.error('Taşınmaz eklenirken hata oluştu:', error);

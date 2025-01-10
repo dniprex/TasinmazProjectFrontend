@@ -112,29 +112,23 @@ export class EditTasinmazComponent implements OnInit {
   }
 
   saveChanges(): void {
-    const updatedProperty = {
-      tasinmazIsim: this.tasinmazIsim,
-      ada: this.ada,
-      parsel: this.parsel,
-      nitelik: this.nitelik,
-      adres: this.adres,
-      mahalle: {
-        id: this.selectedMahalle,
-        ilce: {
-          id: this.selectedIlce,
-          il: {
-            id: this.selectedIl,
-          },
-        },
-      },
-    };
-
-    const id = this.route.snapshot.paramMap.get('id');
+    const id: string = this.route.snapshot.paramMap.get('id');
     if (!id) {
       alert('Taşınmaz ID bulunamadı!');
       return;
     }
-
+  
+    const updatedProperty = {
+      TasinmazIsim: this.tasinmazIsim || 'Taşınmaz', // Varsayılan değer atanıyor
+      TasinmazParsel: this.parsel ? parseInt(this.parsel, 10) : 0, // Sayıya dönüştürülüyor
+      TasinmazNitelik: this.nitelik || '', // Varsayılan olarak boş string atanıyor
+      TasinmazAdres: this.adres || '', // Varsayılan olarak boş string atanıyor
+      MahalleId: parseInt(this.selectedMahalle, 10), // Mahalle ID sayıya dönüştürülüyor
+      Ada: this.ada || '' // Varsayılan olarak boş string atanıyor
+    };
+  
+    console.log('Güncellenen veri:', updatedProperty);
+  
     this.propertyService.updateProperty(+id, updatedProperty).subscribe(
       () => {
         alert('Değişiklikler başarıyla kaydedildi!');
@@ -145,8 +139,8 @@ export class EditTasinmazComponent implements OnInit {
         alert(`Hata: ${error.message || 'Bilinmeyen bir hata oluştu.'}`);
       }
     );
-    
   }
+  
 
   cancel(): void {
     this.router.navigate(['/']);

@@ -21,7 +21,7 @@ export class PropertyService {
   getIlceler(ilId: string): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/Ilceler/${ilId}`);
   }
-  
+
   getMahalleler(ilceId: string): Observable<any[]> {
     return this.http.get<any[]>(this.apiUrl + `/mahalleler/${ilceId}`);
   }
@@ -33,9 +33,11 @@ export class PropertyService {
   }
 
   updateProperty(id: number, property: any): Observable<any> {
-    return this.http.put<any>(this.apiUrl + `/Tasinmazlar/${id}`, property);
+    return this.http.put<any>(`${this.apiUrl}/Tasinmazlar/${id}`, property);
   }
+
+
   addProperty(property: any): Observable<any> {
-  return this.http.post<any>(this.apiUrl + `/Tasinmazlar`, property);
-}
+    return this.http.post<any>(this.apiUrl + `/Tasinmazlar`, property);
+  }
 }

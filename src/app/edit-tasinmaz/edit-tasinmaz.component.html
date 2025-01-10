@@ -4,119 +4,64 @@
     <!-- İl Dropdown -->
     <div class="mb-3">
       <label for="il" class="form-label">İl</label>
-      <select
-        class="form-control"
-        id="il"
-        [(ngModel)]="selectedIl"
-        name="il"
-        (change)="onIlChange()"
-      >
+      <select class="form-control" id="il" [(ngModel)]="selectedIl" name="il" (change)="onIlChange()">
         <option value="">İl seçiniz</option>
         <option *ngFor="let il of iller" [value]="il.id">{{ il.ilAdi }}</option>
       </select>
     </div>
-    
+
     <div class="mb-3">
       <label for="ilce" class="form-label">İlçe</label>
-      <select
-        class="form-control"
-        id="ilce"
-        [(ngModel)]="selectedIlce"
-        name="ilce"
-        (change)="onIlceChange()"
-        [disabled]="!selectedIl"
-      >
+      <select class="form-control" id="ilce" [(ngModel)]="selectedIlce" name="ilce" (change)="onIlceChange()"
+        [disabled]="!selectedIl">
         <option value="">İlçe seçiniz</option>
         <option *ngFor="let ilce of ilceler" [value]="ilce.id">{{ ilce.ilceAdi }}</option>
       </select>
     </div>
-    
+
     <div class="mb-3">
       <label for="mahalle" class="form-label">Mahalle</label>
-      <select
-        class="form-control"
-        id="mahalle"
-        [(ngModel)]="selectedMahalle"
-        name="mahalle"
-        [disabled]="!selectedIlce"
-      >
+      <select class="form-control" id="mahalle" [(ngModel)]="selectedMahalle" name="mahalle" [disabled]="!selectedIlce">
         <option value="">Mahalle seçiniz</option>
         <option *ngFor="let mahalle of mahalleler" [value]="mahalle.id">{{ mahalle.mahalleAdi }}</option>
       </select>
     </div>
-    
+
     <!-- Taşınmaz İsim -->
     <div class="mb-3">
       <label for="tasinmazIsim" class="form-label">Taşınmaz İsmi</label>
-      <input
-        type="text"
-        id="tasinmazIsim"
-        class="form-control"
-        [(ngModel)]="tasinmazIsim"
-        name="tasinmazIsim"
-        required
-      />
+      <input type="text" id="tasinmazIsim" class="form-control" [(ngModel)]="tasinmazIsim" name="tasinmazIsim"
+        required />
     </div>
 
     <!-- ADA -->
     <div class="mb-3">
       <label for="ada" class="form-label">ADA</label>
-      <input
-        type="text"
-        id="ada"
-        class="form-control"
-        [(ngModel)]="ada"
-        name="ada"
-        required
-      />
+      <input type="text" id="ada" class="form-control" [(ngModel)]="ada" name="ada" required />
     </div>
 
     <!-- PARSEL -->
     <div class="mb-3">
       <label for="parsel" class="form-label">Parsel</label>
-      <input
-        type="text"
-        id="parsel"
-        class="form-control"
-        [(ngModel)]="parsel"
-        name="parsel"
-        required
-      />
+      <input type="text" id="parsel" class="form-control" [(ngModel)]="parsel" name="parsel" required />
     </div>
 
     <!-- Nitelik -->
     <div class="mb-3">
       <label for="nitelik" class="form-label">Nitelik</label>
-      <input
-        type="text"
-        id="nitelik"
-        class="form-control"
-        [(ngModel)]="nitelik"
-        name="nitelik"
-        required
-      />
+      <input type="text" id="nitelik" class="form-control" [(ngModel)]="nitelik" name="nitelik" required />
     </div>
 
     <!-- Adres -->
     <div class="mb-3">
       <label for="adres" class="form-label">Adres</label>
-      <textarea
-        id="adres"
-        class="form-control"
-        [(ngModel)]="adres"
-        name="adres"
-        required
-      ></textarea>
+      <textarea id="adres" class="form-control" [(ngModel)]="adres" name="adres" required></textarea>
     </div>
 
     <!-- Butonlar -->
-    <button 
-    type="button" 
-    class="btn btn-primary" 
-    (click)="saveChanges()" 
-    [disabled]="editForm.invalid">
-    Kaydet
-  </button>
+    <button type="button" class="btn btn-primary" (click)="saveChanges()" [disabled]="editForm.invalid">
+      Kaydet
+    </button>
     <button type="button" class="btn btn-secondary" (click)="cancel()">İptal</button>
   </form>
 </div>
