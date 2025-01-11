@@ -16,7 +16,7 @@ export class AppComponent implements OnInit {
   ngOnInit(): void {
     this.propertyService.getProperties().subscribe(
       (data) => {
-        this.properties = data; // Verileri tabloya aktar
+        this.properties = data;
         console.log(this.properties);
       },
       (error) => {

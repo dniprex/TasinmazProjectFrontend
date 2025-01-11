@@ -1,0 +1,40 @@
+<div class="login-container">
+  <div class="login-box">
+    <h2>Giriş Yap</h2>
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+      <div class="form-group">
+        <label for="email">Kullanıcı Adı</label>
+        <input
+          type="email"
+          id="email"
+          class="form-control"
+          formControlName="email"
+        />
+        <div *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched">
+          <small *ngIf="loginForm.get('email')?.errors?.required">Email gerekli.</small>
+          <small *ngIf="loginForm.get('email')?.errors?.email">Geçerli bir email girin.</small>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="password">Parola</label>
+        <input
+          type="password"
+          id="password"
+          class="form-control"
+          formControlName="password"
+        />
+        <div *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
+          <small *ngIf="loginForm.get('password')?.errors?.required">Parola gerekli.</small>
+          <small *ngIf="loginForm.get('password')?.errors?.minlength">Parola en az 8 karakter olmalı.</small>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <button type="submit" class="btn btn-primary" [disabled]="loginForm.invalid">
+          Giriş Yap
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
