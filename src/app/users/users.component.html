@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kullanıcı İşlemleri</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+</head>
+
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">Kullanıcı İşlemleri</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item">
+            <a class="nav-link" aria-current="page"  routerLink="/ana-menu">Mevcut Taşınmazlar</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/edit-user">Log İşlemleri</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" routerLink="/users">Kullanıcı İşlemleri</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container-fluid mt-5 pt-4">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <div *ngIf="alertMessage" [ngClass]="alertClass" class="alert mt-3" role="alert">
+          {{ alertMessage }}
+        </div>
+        <!-- Başlık, searchbox ve butonları hizalama -->
+        <div class="d-flex align-items-center justify-content-between mb-3">
+          <!-- Başlık -->
+          <h3 class="mb-0">Kullanıcılar</h3>
+
+          <!-- Arama kutusu -->
+          <div class="d-flex justify-content-center flex-grow-1 mx-3">
+            <input type="text" class="form-control w-50" style="min-width: 200px;" placeholder="Kullanıcı Ara..." />
+          </div>
+
+          <!-- Butonlar -->
+          <div class="action-buttons d-flex align-items-center gap-2">
+            <button class="btn btn-light" (click)="navigateToAddUser()" type="button">
+              <i class="fas fa-plus"></i> Yeni Kullanıcı Ekle
+            </button>
+            <button class="btn btn-light" (click)="deleteSelectedUsers()">
+              <i class="fas fa-trash"></i> Sil
+            </button>
+            <button class="btn btn-light" (click)="editSelectedUser()">
+              <i class="fas fa-edit"></i> Düzenle
+            </button>
+          </div>
+        </div>
+
+        <!-- Kullanıcılar Tablosu -->
+        <div class="table-responsive">
+          <table class="table table-bordered table-striped align-middle">
+            <thead class="table-dark text-center">
+              <tr>
+                <th></th>
+                <th>Ad Soyad</th>
+                <th>E-posta</th>
+                <th>Rol</th>
+                <th>Adres</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let user of users" class="text-center">
+                <td><input type="checkbox" [(ngModel)]="user.selected"></td>
+                <td>{{ user.name + " " + user.surname }}</td>
+                <td>{{ user.email }}</td>
+                <td>{{ user.userRole }}</td>
+                <td>{{ user.adres }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
+</body>
+
+</html>

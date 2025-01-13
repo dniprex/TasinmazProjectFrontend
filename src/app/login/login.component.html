@@ -1,5 +1,9 @@
+
 <div class="login-container">
   <div class="login-box">
+    <div *ngIf="alertMessage" [ngClass]="alertClass" class="alert" role="alert">
+      {{ alertMessage }}
+    </div>
     <h2>Giriş Yap</h2>
     <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
       <div class="form-group">
@@ -13,6 +17,7 @@
         <div *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched">
           <small *ngIf="loginForm.get('email')?.errors?.required">Email gerekli.</small>
           <small *ngIf="loginForm.get('email')?.errors?.email">Geçerli bir email girin.</small>
+          
         </div>
       </div>
 

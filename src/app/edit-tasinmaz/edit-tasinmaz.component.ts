@@ -20,7 +20,7 @@ export class EditTasinmazComponent implements OnInit {
   parsel: string = '';
   nitelik: string = '';
   adres: string = '';
-
+  koordinat : string ='';
   constructor(
     private route: ActivatedRoute,
     private propertyService: PropertyService,
@@ -74,6 +74,17 @@ export class EditTasinmazComponent implements OnInit {
   }
 
 
+  alertMessage: string | null = null;
+  alertClass: string = 'alert-light'; 
+  
+  showAlert(message: string, cssClass: string): void {
+    this.alertMessage = message;
+    this.alertClass = cssClass;
+  
+    setTimeout(() => {
+      this.alertMessage = null;
+    }, 5000); 
+  }
 
   loadIlceler(ilId: string, resetDropdown: boolean = true): void {
     this.propertyService.getIlceler(ilId).subscribe(
@@ -87,7 +98,7 @@ export class EditTasinmazComponent implements OnInit {
       },
       (error) => {
         console.error('İlçeler yüklenirken hata oluştu:', error);
-        alert('Seçilen il için ilçe bulunamadı. Lütfen farklı bir il seçin.');
+        this.showAlert('Seçilen il için ilçe bulunamadı. Lütfen farklı bir il seçin.','alert-danger');
         this.ilceler = [];
         this.selectedIlce = '';
         this.selectedMahalle = '';
@@ -114,35 +125,37 @@ export class EditTasinmazComponent implements OnInit {
   saveChanges(): void {
     const id: string = this.route.snapshot.paramMap.get('id');
     if (!id) {
-      alert('Taşınmaz ID bulunamadı!');
+      this.showAlert('Taşınmaz ID bulunamadı!','alert-danger');
       return;
     }
   
     const updatedProperty = {
-      TasinmazIsim: this.tasinmazIsim || 'Taşınmaz', // Varsayılan değer atanıyor
-      TasinmazParsel: this.parsel ? parseInt(this.parsel, 10) : 0, // Sayıya dönüştürülüyor
-      TasinmazNitelik: this.nitelik || '', // Varsayılan olarak boş string atanıyor
-      TasinmazAdres: this.adres || '', // Varsayılan olarak boş string atanıyor
-      MahalleId: parseInt(this.selectedMahalle, 10), // Mahalle ID sayıya dönüştürülüyor
-      Ada: this.ada || '' // Varsayılan olarak boş string atanıyor
+      TasinmazIsim: this.tasinmazIsim || 'Taşınmaz',
+      TasinmazParsel: this.parsel ? parseInt(this.parsel, 10) : 0, 
+      TasinmazNitelik: this.nitelik || '', 
+      TasinmazAdres: this.adres || '',
+      MahalleId: parseInt(this.selectedMahalle, 10), 
+      Ada: this.ada || '' ,
+      TasinmazKoordinatBilgisi: this.koordinat|| ''
     };
   
     console.log('Güncellenen veri:', updatedProperty);
   
     this.propertyService.updateProperty(+id, updatedProperty).subscribe(
       () => {
-        alert('Değişiklikler başarıyla kaydedildi!');
-        this.router.navigate(['/']);
+        this.showAlert('Değişiklikler başarıyla kaydedildi!','alert-success')
+        this.router.navigate(['/ana-menu']);
       },
       (error) => {
         console.error('Güncelleme sırasında hata oluştu:', error);
-        alert(`Hata: ${error.message || 'Bilinmeyen bir hata oluştu.'}`);
+        this.showAlert(`Hata: ${error.message || 'Bilinmeyen bir hata oluştu.'}`,'alert-danger');
       }
     );
   }
   
 
   cancel(): void {
-    this.router.navigate(['/']);
+    this.router.navigate(['/ana-menu']);
+
   }
 }

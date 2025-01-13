@@ -10,6 +10,10 @@ import { TasinmazlarComponent } from './tasinmazlar/tasinmazlar.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { EditTasinmazComponent } from './edit-tasinmaz/edit-tasinmaz.component';
 import { LoginComponent } from './login/login.component';
+import { UsersComponent } from './users/users.component';
+import { UserService } from './services/user.service';
+import { AddUserComponent } from './add-user/add-user.component';
+import { EditUserComponent } from './edit-user/edit-user.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -17,7 +21,10 @@ import { LoginComponent } from './login/login.component';
     AddTasinmazComponent,
     TasinmazlarComponent,
     EditTasinmazComponent,
-    LoginComponent
+    LoginComponent,
+    UsersComponent,
+    AddUserComponent,
+    EditUserComponent
     ],
   imports: [
     BrowserModule,
@@ -27,7 +34,7 @@ import { LoginComponent } from './login/login.component';
     ReactiveFormsModule,
     RouterModule.forRoot([])
   ],
-  providers: [],
+  providers: [UserService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

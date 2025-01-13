@@ -10,7 +10,8 @@ import { AuthService } from '../services/auth.service';
 })
 export class LoginComponent {
   loginForm: FormGroup;
-
+  alertMessage: string | null = null;
+  alertClass: string = 'alert-light';
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
@@ -25,20 +26,33 @@ export class LoginComponent {
   onSubmit() {
     if (this.loginForm.valid) {
       const { email, password } = this.loginForm.value;
-
+  
       this.authService.login(email, password).subscribe(
         (response: any) => {
           console.log('Giriş başarılı:', response);
-          localStorage.setItem('token', response.token); // Token'ı sakla
-          this.router.navigate(['/ana-menu']); // Ana menüye yönlendir
+          localStorage.setItem('token', response.token); 
+          this.router.navigate(['/ana-menu']);
+          // Başarılı girişte mesaj göster (isteğe bağlı)
+          this.showAlert('Giriş başarılı!', 'alert-success');
         },
         (error) => {
           console.error('Giriş başarısız:', error);
-          alert('Giriş başarısız. Lütfen bilgilerinizi kontrol edin.');
+          this.showAlert('Giriş başarısız. Lütfen bilgilerinizi kontrol edin.', 'alert-danger');
         }
       );
     } else {
-      alert('Lütfen formu doğru bir şekilde doldurun.');
+      this.showAlert('Lütfen formu doğru bir şekilde doldurun.', 'alert-danger');
     }
+  }
+  
+  // Alert gösterme fonksiyonu
+  showAlert(message: string, cssClass: string) {
+    this.alertMessage = message;
+    this.alertClass = cssClass;
+  
+    // 5 saniye sonra mesajı kaldır
+    setTimeout(() => {
+      this.alertMessage = null;
+    }, 5000);
   }
 }

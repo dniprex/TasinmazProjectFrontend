@@ -2,6 +2,9 @@
 <div class="container mt-5">
   <h2>Yeni Taşınmaz Ekle</h2>
   <form>
+    <div *ngIf="alertMessage" [ngClass]="alertClass" class="alert mt-3" role="alert">
+      {{ alertMessage }}
+    </div>
     <div class="mb-3">
       <label for="il" class="form-label">İl</label>
       <select class="form-control" id="il" [(ngModel)]="selectedIl" name="il" (change)="onIlChange()">
@@ -54,7 +57,11 @@
       <input type="text" class="form-control" id="adres" [(ngModel)]="adres" name="adres" placeholder="Adres giriniz"
         required />
     </div>
-
+    <div class="mb-3">
+      <label for="koordinat" class="form-label">Koordinat</label>
+      <input type="text" class="form-control" id="koordinat" [(ngModel)]="koordinat" name="koordinat" placeholder="Koordinat giriniz"
+        required />
+    </div>
     <form (ngSubmit)="onSubmit()">
       <button type="submit" class="btn btn-success">Kaydet</button>
       <button type="button" class="btn btn-secondary" (click)="cancel()">

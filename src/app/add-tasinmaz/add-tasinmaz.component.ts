@@ -21,6 +21,7 @@ export class AddTasinmazComponent implements OnInit {
   parsel: string = '';
   nitelik: string = '';
   adres: string = '';
+  koordinat: string = '';
   resetForm: any;
   constructor(private propertyService: PropertyService,
      private router: Router
@@ -64,6 +65,17 @@ export class AddTasinmazComponent implements OnInit {
     this.selectedMahalle = ''; 
   }
 
+  alertMessage: string | null = null;
+  alertClass: string = 'alert-light'; 
+  
+  showAlert(message: string, cssClass: string): void {
+    this.alertMessage = message;
+    this.alertClass = cssClass;
+  
+    setTimeout(() => {
+      this.alertMessage = null;
+    }, 5000); 
+  }
   
   onIlceChange(): void {
     const selectedIlceId = this.selectedIlce;
@@ -78,24 +90,24 @@ export class AddTasinmazComponent implements OnInit {
       TasinmazAdres: this.adres || '',
       MahalleId: parseInt(this.selectedMahalle, 10),
       Ada: this.ada || '',
-      KoordinatBilgisi: '' 
+      KoordinatBilgisi: this.koordinat ||'',
     };
   
     console.log('Gönderilen veri:', newProperty); 
     this.propertyService.addProperty(newProperty).subscribe(
       (response) => {
         console.log('Taşınmaz başarıyla eklendi:', response);
-        alert('Taşınmaz başarıyla eklendi!');
-        this.router.navigate(['/']);
+        this.showAlert('Taşınmaz başarıyla eklendi!','alert-succes');
+        this.router.navigate(['/ana-menu']);
       },
       (error) => {
         console.error('Taşınmaz eklenirken hata oluştu:', error);
-        alert('Taşınmaz eklenirken bir hata oluştu!');
+        this.showAlert('Taşınmaz eklenirken bir hata oluştu!','alert-danger');
       }
     );
   }
   cancel() {
-    this.router.navigate(['/']);
+    this.router.navigate(['/ana-menu']);
   }
   
 }

@@ -1,6 +1,9 @@
 <div class="container mt-4">
   <h2>Taşınmaz Düzenle</h2>
   <form #editForm="ngForm">
+    <div *ngIf="alertMessage" [ngClass]="alertClass" class="alert mt-3" role="alert">
+      {{ alertMessage }}
+    </div>
     <!-- İl Dropdown -->
     <div class="mb-3">
       <label for="il" class="form-label">İl</label>
@@ -58,8 +61,8 @@
       <textarea id="adres" class="form-control" [(ngModel)]="adres" name="adres" required></textarea>
     </div>
 
-    <!-- Butonlar -->
-    <button type="button" class="btn btn-primary" (click)="saveChanges()" [disabled]="editForm.invalid">
+    <!-- Butonlar  [disabled]="editForm.invalid"-->
+    <button type="button" class="btn btn-primary" (click)="saveChanges()" >
       Kaydet
     </button>
     <button type="button" class="btn btn-secondary" (click)="cancel()">İptal</button>

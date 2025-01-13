@@ -6,6 +6,46 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Taşınmazlar</title>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <style>
+    .action-buttons button {
+      background-color: white;
+      color: black;
+      border: 1px solid #ccc;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .action-buttons button:hover {
+      background-color: #f8f8f8;
+      color: #000;
+      border-color: #bbb;
+    }
+
+    .action-buttons svg {
+      fill: black;
+      width: 16px;
+      height: 16px;
+    }
+
+    .logout-button {
+      background-color: white;
+      color: black;
+      border: 1px solid #ccc;
+      padding: 5px 10px;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .logout-button:hover {
+      background-color: #f8f8f8;
+      color: #000;
+      border-color: #bbb;
+    }
+  </style>
 </head>
 
 <body>
@@ -26,12 +66,12 @@
             <a class="nav-link" href="#">Log İşlemleri</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#">Kullanıcı İşlemleri</a>
+            <a class="nav-link" routerLink ='/users'>Kullanıcı İşlemleri</a>
           </li>
         </ul>
-        <form class="d-flex" role="search">
-          <button class="btn btn-outline-success" (click)="navigateToAddTasinmaz()" type="button">Yeni Taşınmaz Ekle</button>
-        </form>
+        <button class="logout-button" (click)="logout()"> <!-- logout fonksiyonunu çağır -->
+          <i class="fas fa-sign-out-alt"></i> Çıkış Yap
+        </button>
       </div>
     </div>
   </nav>
@@ -40,11 +80,39 @@
   <div class="container-fluid mt-5 pt-4">
     <div class="card shadow-sm">
       <div class="card-body">
-        <h3 class="text-center mb-4">Mevcut Taşınmazlar</h3>
+        <!-- Başlık, searchbox ve butonları aynı satırda hizalayacağız -->
+        <div class="d-flex align-items-center justify-content-between mb-3">
+          <!-- Başlık solda -->
+          <h3 class="mb-0">Mevcut Taşınmazlar</h3>
+
+          <!-- Arama kutusu ortalanmış şekilde -->
+          <div class="d-flex justify-content-center flex-grow-1 mx-3">
+            <input type="text" class="form-control w-50" style="min-width: 200px;" placeholder="Ara...(İŞLEVSİZ)" />
+          </div>
+
+          <!-- Sağda yer alan butonlar -->
+          <div class="action-buttons d-flex align-items-center gap-2">
+            <button class="btn" (click)="navigateToAddTasinmaz()" type="button">
+              <i class="fas fa-plus"></i> Yeni Taşınmaz Ekle
+            </button>
+            <button class="btn" (click)="deleteSelectedProperties()">
+              <i class="fas fa-trash"></i> Sil
+            </button>
+            <button class="btn" (click)="editSelectedProperty()">
+              <i class="fas fa-edit"></i> Düzenle
+            </button>
+          </div>
+        </div>
+        <div *ngIf="alertMessage" [ngClass]="alertClass" class="alert mt-3" role="alert">
+          {{ alertMessage }}
+        </div>
+        
+        <!-- Taşınmazlar Tablosu -->
         <div class="table-responsive">
           <table class="table table-bordered table-striped align-middle">
             <thead class="table-dark text-center">
               <tr>
+                <th></th>
                 <th>İL</th>
                 <th>İLÇE</th>
                 <th>MAHALLE</th>
@@ -52,11 +120,12 @@
                 <th>PARSEL</th>
                 <th>NİTELİK</th>
                 <th>ADRES</th>
-                <th>İŞLEM</th>
+                <th>KOORDİNAT</th>
               </tr>
             </thead>
             <tbody>
               <tr *ngFor="let property of properties" class="text-center">
+                <td><input type="checkbox" [(ngModel)]="property.selected"></td>
                 <td>{{ property.mahalle.ilce.il.ilAdi }}</td>
                 <td>{{ property.mahalle.ilce.ilceAdi }}</td>
                 <td>{{ property.mahalle.mahalleAdi }}</td>
@@ -64,16 +133,8 @@
                 <td>{{ property.tasinmazParsel }}</td>
                 <td>{{ property.tasinmazNitelik }}</td>
                 <td>{{ property.tasinmazAdres }}</td>
-                <td>
-                  <div class="d-flex justify-content-center gap-2">
-                    <button class="btn btn-danger btn-sm" (click)="deleteProperty(property)">
-                      Sil
-                    </button>
-                    <button class="btn btn-primary btn-sm" (click)="editProperty(property)">
-                      Düzenle
-                    </button>
-                  </div>
-                </td>
+                <td>{{ property.koordinatBilgisi}}</td>
+
               </tr>
             </tbody>
           </table>
@@ -83,6 +144,7 @@
   </div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
 </body>
 
 </html>
