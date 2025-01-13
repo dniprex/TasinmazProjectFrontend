@@ -10,8 +10,8 @@ import { AuthService } from '../services/auth.service';
 })
 export class AnaMenuComponent implements OnInit {
   properties: any[] = [];
-  filteredProperties: any[] = []; 
-  searchQuery: string = '';
+  filteredProperties: any[] = [];
+  searchQuery: string = ''; // Arama sorgusu
 
   constructor(
     private propertyService: PropertyService, 
@@ -23,50 +23,41 @@ export class AnaMenuComponent implements OnInit {
     this.propertyService.getProperties().subscribe(
       (data) => {
         this.properties = data;
-        this.filteredProperties = this.properties.slice(); 
+        this.filteredProperties = this.properties.slice(); // Başlangıçta tüm taşınmazlar
       },
       (error) => {
         console.error('API Error:', error); 
       }
     );
   }
+
+  searchProperties(): void {
+    if (!this.searchQuery) {
+      this.filteredProperties = this.properties.slice(); 
+    } else {
+      this.filteredProperties = this.properties.filter(property =>
+        property.mahalle.ilce.il.ilAdi.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+        property.mahalle.ilce.ilceAdi.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+        property.mahalle.mahalleAdi.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+        property.tasinmazParsel.toString().includes(this.searchQuery) || 
+        property.ada.toString().includes(this.searchQuery) || 
+        property.tasinmazNitelik.toLowerCase().includes(this.searchQuery.toLowerCase()) || 
+        property.tasinmazAdres.toLowerCase().includes(this.searchQuery.toLowerCase()) 
+      );
+    }
+  }
+
   alertMessage: string | null = null;
-  alertClass: string = 'alert-light'; // Varsayılan sınıf
+  alertClass: string = 'alert-light'; 
   
   showAlert(message: string, cssClass: string): void {
     this.alertMessage = message;
     this.alertClass = cssClass;
   
-    // Mesajı belirli bir süre sonra otomatik olarak kaldır
     setTimeout(() => {
       this.alertMessage = null;
-    }, 5000); // 5 saniye sonra kaldır
+    }, 5000); 
   }
-  
- /* searchProperties(): void {
-    const query = this.searchQuery.toLowerCase(); // Arama sorgusunu küçük harfe çevir
-    
-    this.filteredProperties = this.properties.filter(property => {
-      // Null kontrolleri ile tüm alanları kontrol et
-      const ilAdi = property?.mahalle?.ilce?.il?.ilAdi || '';
-      const ilceAdi = property?.mahalle?.ilce?.ilceAdi || '';
-      const mahalleAdi = property?.mahalle?.mahalleAdi || '';
-      const tasinmazAdres = property?.tasinmazAdres || '';
-      const tasinmazNitelik = property?.tasinmazNitelik || '';
-      const koordinatBilgisi = property?.koordinatBilgisi || '';
-      
-      // Alanlardan herhangi biri sorguyu içeriyorsa eşleşir
-      return (
-        ilAdi.toLowerCase().includes(query) ||
-        ilceAdi.toLowerCase().includes(query) ||
-        mahalleAdi.toLowerCase().includes(query) ||
-        tasinmazAdres.toLowerCase().includes(query) ||
-        tasinmazNitelik.toLowerCase().includes(query) ||
-        koordinatBilgisi.toLowerCase().includes(query)
-      );
-    });
-  }*/
-  
 
   navigateToAddTasinmaz() {
     this.router.navigate(['/add-tasinmaz']);
@@ -88,7 +79,6 @@ export class AnaMenuComponent implements OnInit {
     const propertyToEdit = selectedProperties[0];
     this.router.navigate(['/edit-tasinmaz', propertyToEdit.id]);
   }
-  
 
   deleteSelectedProperties() {
     const selectedProperties = this.properties.filter(property => property.selected);
@@ -116,7 +106,6 @@ export class AnaMenuComponent implements OnInit {
         });
     }
   }
-  
 
   logout(): void {
     this.authService.logout();
