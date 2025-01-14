@@ -8,49 +8,75 @@ import { UserService } from '../services/user.service';
   styleUrls: ['./users.component.css']
 })
 export class UsersComponent implements OnInit {
-  users: any[] = [];  // Tüm kullanıcılar
-  filteredUsers: any[] = [];  // Arama sonucu filtrelenmiş kullanıcılar
-  searchQuery: string = '';  // Arama sorgusu
+  users: any[] = []; // Tüm kullanıcılar
+  filteredUsers: any[] = []; // Filtrelenmiş kullanıcılar
+  pagedUsers: any[] = []; // Sayfa başına kullanıcılar
+  searchQuery: string = ''; // Arama sorgusu
+  currentPage: number = 1; // Mevcut sayfa
+  itemsPerPage: number = 10; // Sayfa başına gösterilecek kullanıcı sayısı
+  alertMessage: string | null = null; // Uyarı mesajı
+  alertClass: string = 'alert-light'; // Uyarı mesajının CSS sınıfı
 
-  alertMessage: string | null = null;
-  alertClass: string = 'alert-light';
-
-  constructor(private userService: UserService, private router: Router) { }
+  constructor(private userService: UserService, private router: Router) {}
 
   ngOnInit(): void {
-    this.userService.getUsers().subscribe(data => {
-      console.log('API Verisi:', data);
-      this.users = data;
-      this.filteredUsers = this.users.slice();  // Başlangıçta tüm kullanıcıları göster
-    }, error => {
-      console.error('Error fetching users:', error);
-    });
+    this.userService.getUsers().subscribe(
+      (data) => {
+        console.log('API Verisi:', data);
+        this.users = data;
+        this.filteredUsers = this.users.slice();
+        this.updatePagedUsers(); // Başlangıçta sayfa verilerini güncelle
+      },
+      (error) => {
+        console.error('Error fetching users:', error);
+      }
+    );
   }
 
-  // Kullanıcıları arama fonksiyonu
   searchUsers(): void {
     if (!this.searchQuery) {
-      // Eğer arama sorgusu boşsa, tüm kullanıcıları göster
       this.filteredUsers = this.users.slice();
     } else {
-      // Arama sorgusu varsa, kullanıcıları filtrele
       this.filteredUsers = this.users.filter(user => {
-        const fullName = (user.name + " " + user.surname).toLowerCase();  // Ad ve soyad birleşti
-        return fullName.includes(this.searchQuery.toLowerCase()) ||  // Birleştirilmiş isimi arama
+        const fullName = (user.name + " " + user.surname).toLowerCase();
+        return fullName.includes(this.searchQuery.toLowerCase()) ||
           user.email.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
           user.userRole.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
           user.adres.toLowerCase().includes(this.searchQuery.toLowerCase());
       });
     }
+    this.currentPage = 1; // Yeni bir arama yapıldığında ilk sayfaya dön
+    this.updatePagedUsers();
   }
-  
 
-  navigateToAddUser() {
+  updatePagedUsers(): void {
+    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+    const endIndex = startIndex + this.itemsPerPage;
+    this.pagedUsers = this.filteredUsers.slice(startIndex, endIndex);
+  }
+
+  getTotalPages(): number {
+    return Math.ceil(this.filteredUsers.length / this.itemsPerPage);
+  }
+
+  getPages(): number[] {
+    const totalPages = this.getTotalPages();
+    return Array.from({ length: totalPages }, (_, i) => i + 1);
+  }
+
+  onPageChange(page: number): void {
+    if (page < 1 || page > this.getTotalPages()) {
+      return;
+    }
+    this.currentPage = page;
+    this.updatePagedUsers();
+  }
+
+  navigateToAddUser(): void {
     this.router.navigate(['/add-user']);
   }
 
-  editSelectedUser() {
-    console.log('Edit Selected User çalıştırıldı.');
+  editSelectedUser(): void {
     const selectedUsers = this.users.filter(user => user.selected);
 
     if (selectedUsers.length === 0) {
@@ -67,7 +93,7 @@ export class UsersComponent implements OnInit {
     this.router.navigate(['/edit-user', userToEdit.id]);
   }
 
-  deleteSelectedUsers() {
+  deleteSelectedUsers(): void {
     const selectedUsers = this.users.filter(user => user.selected);
     if (selectedUsers.length === 0) {
       this.showAlert('Lütfen silmek için bir kullanıcı seçin.', 'alert-danger');
@@ -81,6 +107,8 @@ export class UsersComponent implements OnInit {
       Promise.all(deleteRequests)
         .then(() => {
           this.users = this.users.filter(user => !user.selected);
+          this.filteredUsers = this.users.slice();
+          this.updatePagedUsers(); // Sayfa verilerini güncelle
           this.showAlert('Seçili kullanıcılar başarıyla silindi!', 'alert-success');
         })
         .catch(error => {

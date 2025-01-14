@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { Property } from '../models/property.model';
 
 @Injectable({
   providedIn: 'root'
@@ -10,7 +11,6 @@ export class PropertyService {
 
   constructor(private http: HttpClient) { }
 
-  // Taşınmaz verilerini API'den almak için metot
   getProperties(): Observable<any[]> {
     return this.http.get<any[]>(this.apiUrl + "/Tasinmazlar");
   }
@@ -19,11 +19,11 @@ export class PropertyService {
   }
 
   getIlceler(ilId: string): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/Ilceler/${ilId}`);
+    return this.http.get<any[]>(`${this.apiUrl}/Ilceler/by-il/${ilId}`);
   }
 
   getMahalleler(ilceId: string): Observable<any[]> {
-    return this.http.get<any[]>(this.apiUrl + `/mahalleler/${ilceId}`);
+    return this.http.get<any[]>(this.apiUrl + `/mahalleler/by-ilce/${ilceId}`);
   }
   deleteProperty(id: number): Observable<any> {
     return this.http.delete<any>(this.apiUrl + `/Tasinmazlar/${id}`);

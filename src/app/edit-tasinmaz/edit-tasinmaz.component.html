@@ -5,30 +5,33 @@
       {{ alertMessage }}
     </div>
     <!-- İl Dropdown -->
+    <!-- İl -->
     <div class="mb-3">
       <label for="il" class="form-label">İl</label>
-      <select class="form-control" id="il" [(ngModel)]="selectedIl" name="il" (change)="onIlChange()">
+      <select class="form-control" id="il" [(ngModel)]="selectedIl" name="il" (change)="onIlChange()" disabled>
         <option value="">İl seçiniz</option>
         <option *ngFor="let il of iller" [value]="il.id">{{ il.ilAdi }}</option>
       </select>
     </div>
 
+    <!-- İlçe -->
     <div class="mb-3">
       <label for="ilce" class="form-label">İlçe</label>
-      <select class="form-control" id="ilce" [(ngModel)]="selectedIlce" name="ilce" (change)="onIlceChange()"
-        [disabled]="!selectedIl">
+      <select class="form-control" id="ilce" [(ngModel)]="selectedIlce" name="ilce" (change)="onIlceChange()" disabled>
         <option value="">İlçe seçiniz</option>
         <option *ngFor="let ilce of ilceler" [value]="ilce.id">{{ ilce.ilceAdi }}</option>
       </select>
     </div>
 
+    <!-- Mahalle -->
     <div class="mb-3">
       <label for="mahalle" class="form-label">Mahalle</label>
-      <select class="form-control" id="mahalle" [(ngModel)]="selectedMahalle" name="mahalle" [disabled]="!selectedIlce">
+      <select class="form-control" id="mahalle" [(ngModel)]="selectedMahalle" name="mahalle" disabled>
         <option value="">Mahalle seçiniz</option>
         <option *ngFor="let mahalle of mahalleler" [value]="mahalle.id">{{ mahalle.mahalleAdi }}</option>
       </select>
     </div>
+
 
     <!-- Taşınmaz İsim -->
     <div class="mb-3">
@@ -43,7 +46,7 @@
       <input type="text" id="ada" class="form-control" [(ngModel)]="ada" name="ada" required />
     </div>
 
-    <!-- PARSEL -->
+    <!-- Parsel -->
     <div class="mb-3">
       <label for="parsel" class="form-label">Parsel</label>
       <input type="text" id="parsel" class="form-control" [(ngModel)]="parsel" name="parsel" required />
@@ -61,8 +64,15 @@
       <textarea id="adres" class="form-control" [(ngModel)]="adres" name="adres" required></textarea>
     </div>
 
+    <!-- Koordinat -->
+    <div class="mb-3">
+      <label for="koordinat" class="form-label">Koordinat</label>
+      <input type="text" id="koordinat" class="form-control" [(ngModel)]="koordinat" name="koordinat" required
+        disabled />
+    </div>
+
     <!-- Butonlar  [disabled]="editForm.invalid"-->
-    <button type="button" class="btn btn-primary" (click)="saveChanges()" >
+    <button type="button" class="btn btn-primary" (click)="saveChanges()">
       Kaydet
     </button>
     <button type="button" class="btn btn-secondary" (click)="cancel()">İptal</button>

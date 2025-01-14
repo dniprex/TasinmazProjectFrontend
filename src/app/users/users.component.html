@@ -78,7 +78,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let user of filteredUsers" class="text-center">
+              <tr *ngFor="let user of pagedUsers" class="text-center">
                 <td><input type="checkbox" [(ngModel)]="user.selected"></td>
                 <td>{{ user.name + " " + user.surname }}</td>
                 <td>{{ user.email }}</td>
@@ -88,6 +88,26 @@
             </tbody>
           </table>
         </div>
+        
+        <!-- Sayfalama Kontrolleri -->
+        <nav class="d-flex justify-content-center">
+          <ul class="pagination">
+            <li class="page-item" [class.disabled]="currentPage === 1">
+              <button class="page-link" (click)="onPageChange(currentPage - 1)">Önceki</button>
+            </li>
+            <li
+              class="page-item"
+              *ngFor="let page of getPages()"
+              [class.active]="currentPage === page"
+            >
+              <button class="page-link" (click)="onPageChange(page)">{{ page }}</button>
+            </li>
+            <li class="page-item" [class.disabled]="currentPage === getTotalPages()">
+              <button class="page-link" (click)="onPageChange(currentPage + 1)">Sonraki</button>
+            </li>
+          </ul>
+        </nav>
+        
       </div>
     </div>
   </div>

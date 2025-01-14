@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
+import jwt_decode from 'jwt-decode';
 
 @Component({
   selector: 'app-login',
@@ -27,23 +28,40 @@ export class LoginComponent {
     if (this.loginForm.valid) {
       const { email, password } = this.loginForm.value;
   
-      this.authService.login(email, password).subscribe(
-        (response: any) => {
-          console.log('Giriş başarılı:', response);
-          localStorage.setItem('token', response.token); 
+      this.authService.login({ email, password }).subscribe({
+        next: (response: any) => {
+          const token = response.token;
+  
+          if (!token || token.split('.').length !== 3) {
+            console.error('Sunucudan geçersiz token alındı.');
+            this.showAlert('Geçersiz token alındı!', 'alert-danger');
+            return;
+          }
+  
+          localStorage.setItem('token', token);
+          try {
+            const decodedToken = jwt_decode<{ role: string }>(token);
+            console.log('Rol:', decodedToken.role);
+          } catch (error) {
+            console.error('Token çözümleme hatası:', error);
+          }
           this.router.navigate(['/ana-menu']);
-          // Başarılı girişte mesaj göster (isteğe bağlı)
           this.showAlert('Giriş başarılı!', 'alert-success');
         },
-        (error) => {
-          console.error('Giriş başarısız:', error);
-          this.showAlert('Giriş başarısız. Lütfen bilgilerinizi kontrol edin.', 'alert-danger');
-        }
-      );
+        error: (err) => {
+          console.error('Giriş başarısız:', err);
+          this.showAlert(
+            'Giriş başarısız. Lütfen bilgilerinizi kontrol edin.',
+            'alert-danger'
+          );
+        },
+      });
     } else {
       this.showAlert('Lütfen formu doğru bir şekilde doldurun.', 'alert-danger');
     }
   }
+  
+  
   
   // Alert gösterme fonksiyonu
   showAlert(message: string, cssClass: string) {

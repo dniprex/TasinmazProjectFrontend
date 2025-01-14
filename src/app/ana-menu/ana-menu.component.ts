@@ -9,21 +9,32 @@ import { AuthService } from '../services/auth.service';
   styleUrls: ['./ana-menu.component.css']
 })
 export class AnaMenuComponent implements OnInit {
-  properties: any[] = [];
-  filteredProperties: any[] = [];
+  properties: any[] = []; // Tüm taşınmazlar
+  filteredProperties: any[] = []; // Filtrelenmiş taşınmazlar
+  pagedProperties: any[] = []; // Sayfaya özel taşınmazlar
   searchQuery: string = ''; // Arama sorgusu
+  userRole: string | null = null; // Kullanıcı rolü
+  currentPage: number = 1; // Mevcut sayfa
+  itemsPerPage: number = 10; // Sayfa başına gösterilecek öğe sayısı
+  alertMessage: string | null = null; // Uyarı mesajı
+  alertClass: string = 'alert-light'; // Uyarı mesajının stili
 
   constructor(
     private propertyService: PropertyService, 
     private router: Router, 
     private authService: AuthService
-  ) { }
+  ) {}
 
   ngOnInit(): void {
+    // Kullanıcı rolünü al
+    this.userRole = this.authService.getDecodedTokenRole();
+
+    // Taşınmazları yükle
     this.propertyService.getProperties().subscribe(
       (data) => {
         this.properties = data;
         this.filteredProperties = this.properties.slice(); // Başlangıçta tüm taşınmazlar
+        this.updatePagedProperties(); // Sayfa verilerini güncelle
       },
       (error) => {
         console.error('API Error:', error); 
@@ -45,11 +56,33 @@ export class AnaMenuComponent implements OnInit {
         property.tasinmazAdres.toLowerCase().includes(this.searchQuery.toLowerCase()) 
       );
     }
+    this.currentPage = 1; // Yeni bir arama yapıldığında ilk sayfaya dön
+    this.updatePagedProperties();
   }
 
-  alertMessage: string | null = null;
-  alertClass: string = 'alert-light'; 
-  
+  updatePagedProperties(): void {
+    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+    const endIndex = startIndex + this.itemsPerPage;
+    this.pagedProperties = this.filteredProperties.slice(startIndex, endIndex);
+  }
+
+  getTotalPages(): number {
+    return Math.ceil(this.filteredProperties.length / this.itemsPerPage);
+  }
+
+  getPages(): number[] {
+    const totalPages = this.getTotalPages();
+    return Array.from({ length: totalPages }, (_, i) => i + 1);
+  }
+
+  onPageChange(page: number): void {
+    if (page < 1 || page > this.getTotalPages()) {
+      return;
+    }
+    this.currentPage = page;
+    this.updatePagedProperties();
+  }
+
   showAlert(message: string, cssClass: string): void {
     this.alertMessage = message;
     this.alertClass = cssClass;
@@ -59,15 +92,15 @@ export class AnaMenuComponent implements OnInit {
     }, 5000); 
   }
 
-  navigateToAddTasinmaz() {
+  navigateToAddTasinmaz(): void {
     this.router.navigate(['/add-tasinmaz']);
   }
 
-  editSelectedProperty() {
+  editSelectedProperty(): void {
     const selectedProperties = this.properties.filter(property => property.selected);
   
     if (selectedProperties.length === 0) {
-      this.showAlert('Lütfen düzenlemek için bir taşınmaz seçin.', 'alert-warning');
+      this.showAlert('Lütfen düzenlemek için bir taşınmaz seçin.', 'alert-danger');
       return;
     }
   
@@ -80,7 +113,7 @@ export class AnaMenuComponent implements OnInit {
     this.router.navigate(['/edit-tasinmaz', propertyToEdit.id]);
   }
 
-  deleteSelectedProperties() {
+  deleteSelectedProperties(): void {
     const selectedProperties = this.properties.filter(property => property.selected);
   
     if (selectedProperties.length === 0) {
@@ -98,6 +131,7 @@ export class AnaMenuComponent implements OnInit {
         .then(() => {
           this.properties = this.properties.filter(property => !property.selected);
           this.filteredProperties = this.properties.slice();
+          this.updatePagedProperties(); 
           this.showAlert('Seçili veriler başarıyla silindi!', 'alert-success');
         })
         .catch(error => {
