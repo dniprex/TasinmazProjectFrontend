@@ -79,7 +79,7 @@
             </a>
           </li>
         </ul>
-        <button class="logout-button" (click)="logout()"> 
+        <button class="logout-button" (click)="logout()">
           <i class="fas fa-sign-out-alt"></i> Çıkış Yap
         </button>
       </div>
@@ -108,6 +108,9 @@
             </button>
             <button class="btn" (click)="editSelectedProperty()">
               <i class="fas fa-edit"></i> Düzenle
+            </button>
+            <button class="btn" (click)="exportToExcel()">
+              <i class="fas fa-file-excel"></i> Excel'e Aktar
             </button>
           </div>
         </div>
@@ -146,18 +149,14 @@
             </tbody>
           </table>
         </div>
-        
+
         <!-- Sayfalama Kontrolleri -->
         <nav class="d-flex justify-content-center">
           <ul class="pagination">
             <li class="page-item" [class.disabled]="currentPage === 1">
               <button class="page-link" (click)="onPageChange(currentPage - 1)">Önceki</button>
             </li>
-            <li
-              class="page-item"
-              *ngFor="let page of getPages()"
-              [class.active]="currentPage === page"
-            >
+            <li class="page-item" *ngFor="let page of getPages()" [class.active]="currentPage === page">
               <button class="page-link" (click)="onPageChange(page)">{{ page }}</button>
             </li>
             <li class="page-item" [class.disabled]="currentPage === getTotalPages()">

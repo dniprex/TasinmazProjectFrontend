@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { PropertyService } from '../services/property.service';
 import { Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
+import * as XLSX from 'xlsx';
 
 @Component({
   selector: 'app-ana-menu',
@@ -9,54 +10,52 @@ import { AuthService } from '../services/auth.service';
   styleUrls: ['./ana-menu.component.css']
 })
 export class AnaMenuComponent implements OnInit {
-  properties: any[] = []; // Tüm taşınmazlar
-  filteredProperties: any[] = []; // Filtrelenmiş taşınmazlar
-  pagedProperties: any[] = []; // Sayfaya özel taşınmazlar
-  searchQuery: string = ''; // Arama sorgusu
-  userRole: string | null = null; // Kullanıcı rolü
-  currentPage: number = 1; // Mevcut sayfa
-  itemsPerPage: number = 10; // Sayfa başına gösterilecek öğe sayısı
-  alertMessage: string | null = null; // Uyarı mesajı
-  alertClass: string = 'alert-light'; // Uyarı mesajının stili
+  properties: any[] = [];
+  filteredProperties: any[] = [];
+  pagedProperties: any[] = [];
+  searchQuery: string = '';
+  userRole: string | null = null;
+  currentPage: number = 1;
+  itemsPerPage: number = 10;
+  alertMessage: string | null = null;
+  alertClass: string = 'alert-light';
 
   constructor(
-    private propertyService: PropertyService, 
-    private router: Router, 
+    private propertyService: PropertyService,
+    private router: Router,
     private authService: AuthService
   ) {}
 
   ngOnInit(): void {
-    // Kullanıcı rolünü al
     this.userRole = this.authService.getDecodedTokenRole();
 
-    // Taşınmazları yükle
     this.propertyService.getProperties().subscribe(
       (data) => {
         this.properties = data;
-        this.filteredProperties = this.properties.slice(); // Başlangıçta tüm taşınmazlar
-        this.updatePagedProperties(); // Sayfa verilerini güncelle
+        this.filteredProperties = this.properties.slice();
+        this.updatePagedProperties();
       },
       (error) => {
-        console.error('API Error:', error); 
+        console.error('API Error:', error);
       }
     );
   }
 
   searchProperties(): void {
     if (!this.searchQuery) {
-      this.filteredProperties = this.properties.slice(); 
+      this.filteredProperties = this.properties.slice();
     } else {
       this.filteredProperties = this.properties.filter(property =>
         property.mahalle.ilce.il.ilAdi.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
         property.mahalle.ilce.ilceAdi.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
         property.mahalle.mahalleAdi.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-        property.tasinmazParsel.toString().includes(this.searchQuery) || 
-        property.ada.toString().includes(this.searchQuery) || 
-        property.tasinmazNitelik.toLowerCase().includes(this.searchQuery.toLowerCase()) || 
-        property.tasinmazAdres.toLowerCase().includes(this.searchQuery.toLowerCase()) 
+        property.tasinmazParsel.toString().includes(this.searchQuery) ||
+        property.ada.toString().includes(this.searchQuery) ||
+        property.tasinmazNitelik.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+        property.tasinmazAdres.toLowerCase().includes(this.searchQuery.toLowerCase())
       );
     }
-    this.currentPage = 1; // Yeni bir arama yapıldığında ilk sayfaya dön
+    this.currentPage = 1;
     this.updatePagedProperties();
   }
 
@@ -86,10 +85,10 @@ export class AnaMenuComponent implements OnInit {
   showAlert(message: string, cssClass: string): void {
     this.alertMessage = message;
     this.alertClass = cssClass;
-  
+
     setTimeout(() => {
       this.alertMessage = null;
-    }, 5000); 
+    }, 5000);
   }
 
   navigateToAddTasinmaz(): void {
@@ -98,40 +97,40 @@ export class AnaMenuComponent implements OnInit {
 
   editSelectedProperty(): void {
     const selectedProperties = this.properties.filter(property => property.selected);
-  
+
     if (selectedProperties.length === 0) {
       this.showAlert('Lütfen düzenlemek için bir taşınmaz seçin.', 'alert-danger');
       return;
     }
-  
+
     if (selectedProperties.length > 1) {
       this.showAlert('Yalnızca bir taşınmaz düzenlenebilir. Lütfen bir taşınmaz seçin.', 'alert-danger');
       return;
     }
-  
+
     const propertyToEdit = selectedProperties[0];
     this.router.navigate(['/edit-tasinmaz', propertyToEdit.id]);
   }
 
   deleteSelectedProperties(): void {
     const selectedProperties = this.properties.filter(property => property.selected);
-  
+
     if (selectedProperties.length === 0) {
       this.showAlert('Lütfen silmek için en az bir taşınmaz seçin.', 'alert-danger');
       return;
     }
-  
+
     const confirmed = confirm('Seçili verileri silmek istediğinizden emin misiniz?');
     if (confirmed) {
       const deleteRequests = selectedProperties.map(property =>
         this.propertyService.deleteProperty(property.id).toPromise()
       );
-  
+
       Promise.all(deleteRequests)
         .then(() => {
           this.properties = this.properties.filter(property => !property.selected);
           this.filteredProperties = this.properties.slice();
-          this.updatePagedProperties(); 
+          this.updatePagedProperties();
           this.showAlert('Seçili veriler başarıyla silindi!', 'alert-success');
         })
         .catch(error => {
@@ -139,6 +138,31 @@ export class AnaMenuComponent implements OnInit {
           this.showAlert('Veriler silinirken bir hata oluştu.', 'alert-danger');
         });
     }
+  }
+
+  exportToExcel(): void {
+    const dataToExport = (this.searchQuery ? this.filteredProperties : this.properties).map(property => ({
+      Taşınmaz_ID:property.id,
+      İl: property.mahalle.ilce.il.ilAdi,
+      İlçe: property.mahalle.ilce.ilceAdi,
+      Mahalle: property.mahalle.mahalleAdi,
+      Taşınmaz_Adı:property.tasinmazIsim,
+      Ada: property.ada,
+      Parsel: property.tasinmazParsel,
+      Nitelik: property.tasinmazNitelik,
+      Adres: property.tasinmazAdres,
+      Koordinat: property.koordinatBilgisi,
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(dataToExport);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Taşınmazlar');
+
+    const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+    const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
+
+    const FileSaver = require('file-saver');
+    FileSaver.saveAs(blob, 'Tasinmazlar.xlsx');
   }
 
   logout(): void {
