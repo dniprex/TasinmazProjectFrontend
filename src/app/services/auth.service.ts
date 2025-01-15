@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Router } from '@angular/router';
 import * as jwt_decode from 'jwt-decode';
+import { LogService } from './log.service';
 interface DecodedToken {
   id: number;
   role: string;
@@ -16,7 +17,7 @@ export class AuthService {
   private apiUrl = 'http://localhost:44300/api/auth'; 
   private roleSubject = new BehaviorSubject<string | null>(null);
 
-  constructor(private http: HttpClient, private router:Router) {}
+  constructor(private http: HttpClient, private router:Router, private logService:LogService) {}
 
   login(credentials: { email: string; password: string }) {
     return this.http.post<{ token: string }>(`${this.apiUrl}/login`, credentials); 
@@ -62,6 +63,25 @@ export class AuthService {
   
       // Eğer bir rol varsa, döndür
       return decodedToken.role || null;
+    } catch (error) {
+      console.error('Token çözümleme hatası:', error);
+      return null;
+    }
+  }
+  getDecodedTokenEmail(): string | null {
+    const token = localStorage.getItem('token');
+    
+    if (!token) {
+      console.error('Token bulunamadı.');
+      return null;
+    }
+  
+    try {
+      const base64Url = token.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const decodedToken: any = JSON.parse(atob(base64));
+      
+      return decodedToken.email || null;
     } catch (error) {
       console.error('Token çözümleme hatası:', error);
       return null;

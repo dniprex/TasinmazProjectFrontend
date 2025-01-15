@@ -2,8 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PropertyService } from '../services/property.service';
 import { Property } from '../models/property.model';
-
-
+import { LogService } from '../services/log.service';
+import { AuthService } from '../services/auth.service';
 @Component({
   selector: 'app-edit-tasinmaz',
   templateUrl: './edit-tasinmaz.component.html',
@@ -14,6 +14,8 @@ export class EditTasinmazComponent implements OnInit {
   ilceler: any[] = [];
   mahalleler: any[] = [];
 
+  userId: number;
+  userMail: string = '';
   selectedIl: string = '';
   selectedIlce: string = '';
   selectedMahalle: string = '';
@@ -26,11 +28,13 @@ export class EditTasinmazComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private propertyService: PropertyService,
-    private router: Router
+    private router: Router,
+    private logService: LogService,
+    private authService: AuthService
   ) { }
 
   ngOnInit(): void {
-    const id = this.route.snapshot.paramMap.get('id'); 
+    const id = this.route.snapshot.paramMap.get('id');
     if (id) {
       this.propertyService.getPropertyById(+id).subscribe(
         (data) => {
@@ -43,10 +47,10 @@ export class EditTasinmazComponent implements OnInit {
 
             this.tasinmazIsim = data.tasinmazIsim || '';
             this.ada = data.ada || '';
-            this.parsel = data.tasinmazParsel || ''; 
+            this.parsel = data.tasinmazParsel || '';
             this.nitelik = data.tasinmazNitelik || '';
-            this.adres = data.tasinmazAdres || ''; 
-            this.koordinat = data.koordinatBilgisi || ''; 
+            this.adres = data.tasinmazAdres || '';
+            this.koordinat = data.koordinatBilgisi || '';
 
             this.loadIlceler(this.selectedIl, false);
             this.loadMahalleler(this.selectedIlce, false);
@@ -156,11 +160,11 @@ export class EditTasinmazComponent implements OnInit {
 
     const updatedProperty: Property = {
       id: parseInt(id, 10),
-      tasinmazIsim: this.tasinmazIsim || '', 
-      tasinmazParsel: parseInt(this.parsel, 10) || 0, 
-      tasinmazNitelik: this.nitelik || '', 
-      tasinmazAdres: this.adres || '', 
-      ada: this.ada || '', 
+      tasinmazIsim: this.tasinmazIsim || '',
+      tasinmazParsel: parseInt(this.parsel, 10) || 0,
+      tasinmazNitelik: this.nitelik || '',
+      tasinmazAdres: this.adres || '',
+      ada: this.ada || '',
       koordinatBilgisi: this.koordinat || '',
       ilId: parseInt(this.selectedIl, 10),
       ilceId: parseInt(this.selectedIlce, 10),
@@ -172,6 +176,18 @@ export class EditTasinmazComponent implements OnInit {
 
     this.propertyService.updateProperty(parseInt(id, 10), updatedProperty).subscribe(
       () => {
+        this.userId = this.authService.getDecodedTokenUserId();
+        this.userMail = this.authService.getDecodedTokenEmail();
+        console.log(this.userId);
+        console.log(this.userMail);
+        const log = {
+          UserId: this.userId||0,
+          UserMail: this.userMail,
+          Durum: 'Başarılı',
+          IslemTip: 'Taşınmaz Ekleme',
+          Aciklama: `Taşınmaz eklendi: ${updatedProperty.tasinmazIsim}`
+        };
+        this.logService.addLog(log).subscribe();
         this.showAlert('Değişiklikler başarıyla kaydedildi!', 'alert-success');
         this.router.navigate(['/ana-menu']);
       },

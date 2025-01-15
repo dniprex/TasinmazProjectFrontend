@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { UserService } from '../services/user.service';
-
+import { AuthService } from '../services/auth.service';
 @Component({
   selector: 'app-users',
   templateUrl: './users.component.html',
@@ -17,7 +17,7 @@ export class UsersComponent implements OnInit {
   alertMessage: string | null = null; // Uyarı mesajı
   alertClass: string = 'alert-light'; // Uyarı mesajının CSS sınıfı
 
-  constructor(private userService: UserService, private router: Router) {}
+  constructor(private userService: UserService, private router: Router, private authService:AuthService) {}
 
   ngOnInit(): void {
     this.userService.getUsers().subscribe(
@@ -125,5 +125,9 @@ export class UsersComponent implements OnInit {
     setTimeout(() => {
       this.alertMessage = null;
     }, 5000);
+  }
+
+  logout(): void {
+    this.authService.logout();
   }
 }

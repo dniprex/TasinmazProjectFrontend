@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { PropertyService } from '../services/property.service';
 import { Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
+import { LogService } from '../services/log.service';
 import * as XLSX from 'xlsx';
 import * as FileSaver from 'file-saver';
 
@@ -21,19 +22,22 @@ export class AnaMenuComponent implements OnInit {
   itemsPerPage: number = 10;
   alertMessage: string | null = null;
   alertClass: string = 'alert-light';
-
+  userMail: string = '';
   constructor(
     private propertyService: PropertyService,
     private router: Router,
-    private authService: AuthService
+    private authService: AuthService,
+    private logService: LogService
   ) { }
 
   ngOnInit(): void {
     this.userRole = this.authService.getDecodedTokenRole();
     this.userId = this.authService.getDecodedTokenUserId();
+    this.userMail = this.authService.getDecodedTokenEmail();
 
     console.log("Kullanıcı Rolü:", this.userRole);
     console.log("Kullanıcı ID:", this.userId);
+    console.log("Kullanıcı Mail:", this.userMail);
 
     this.propertyService.getProperties().subscribe(
       (data) => {
@@ -43,12 +47,8 @@ export class AnaMenuComponent implements OnInit {
             this.properties = data;
             this.filteredProperties = this.properties.slice();
           } else if (this.userRole === 'User') {
-            console.log("Kullanıcı için veri filtreleniyor");
 
             if (this.userId !== null) {
-              data.forEach((property) => {
-                console.log(`property.userId: ${property.userId}, this.userId: ${this.userId}`);
-              });
 
               this.properties = data.filter((property) => String(property.userId) === String(this.userId));
               console.log("Kullanıcıya ait Taşınmazlar:", this.properties);
@@ -147,24 +147,46 @@ export class AnaMenuComponent implements OnInit {
 
   deleteSelectedProperties(): void {
     const selectedProperties = this.properties.filter(property => property.selected);
-
+  
     if (selectedProperties.length === 0) {
       this.showAlert('Lütfen silmek için en az bir taşınmaz seçin.', 'alert-danger');
       return;
     }
-
+  
     const confirmed = confirm('Seçili verileri silmek istediğinizden emin misiniz?');
     if (confirmed) {
+      console.log('Silinecek taşınmazlar:', selectedProperties);
+  
       const deleteRequests = selectedProperties.map(property =>
         this.propertyService.deleteProperty(property.id).toPromise()
       );
-
+  
       Promise.all(deleteRequests)
         .then(() => {
+          console.log('Silme işlemi başarıyla tamamlandı.');
+  
           this.properties = this.properties.filter(property => !property.selected);
-          this.filteredProperties = this.properties.slice();
-          this.updatePagedProperties();
+          this.filteredProperties = this.properties.slice(); 
+          this.updatePagedProperties(); 
+  
           this.showAlert('Seçili veriler başarıyla silindi!', 'alert-success');
+  
+          const log = {
+            UserId: this.userId,
+            UserMail: this.userMail,
+            Durum: 'Başarılı',
+            IslemTip: 'Taşınmaz Silme',
+            Aciklama: `${selectedProperties.length} taşınmaz silindi.`
+          };
+  
+          this.logService.addLog(log).subscribe(
+            () => {
+              console.log('Log başarıyla kaydedildi.');
+            },
+            (error) => {
+              console.error('Log kaydı sırasında hata oluştu:', error);
+            }
+          );
         })
         .catch(error => {
           console.error('Silme işlemi başarısız:', error);
@@ -172,6 +194,7 @@ export class AnaMenuComponent implements OnInit {
         });
     }
   }
+  
 
   exportToExcel(): void {
     const dataToExport = (this.searchQuery ? this.filteredProperties : this.properties).map(property => ({
@@ -195,9 +218,48 @@ export class AnaMenuComponent implements OnInit {
     const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
 
     FileSaver.saveAs(blob, 'Tasinmazlar.xlsx');
+
+    const log = {
+      UserId: Number(this.userId) || 0,
+      UserMail: this.userMail,
+      Durum: 'Başarılı',
+      IslemTip: 'Excel Aktarma',
+      Aciklama: `${dataToExport.length} taşınmaz Excel'e aktarıldı.`
+    };
+
+    console.log('Gönderilen log:', log);
+
+    this.logService.addLog(log).subscribe(
+      () => {
+        console.log('Log başarıyla kaydedildi.');
+      },
+      (error) => {
+        console.error('Log kaydı sırasında hata oluştu:', error);
+      }
+    );
   }
+
+
 
   logout(): void {
     this.authService.logout();
+    const log = {
+      UserId: Number(this.userId) || 0,
+      UserMail: this.userMail,
+      Durum: 'Başarılı',
+      IslemTip: 'Çıkış Yapma',
+      Aciklama: `Başarıyla çıkış yapıldı`
+    }; this.logService.addLog(log).subscribe(
+      () => {
+        console.log('Log başarıyla kaydedildi.');
+      },
+      (error) => {
+        console.error('Log kaydı sırasında hata oluştu:', error);
+      }
+    );
+
+  }
+  LogScene(): void {
+    this.router.navigate(['/log']);
   }
 }
