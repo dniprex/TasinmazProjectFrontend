@@ -22,6 +22,7 @@ export class AddTasinmazComponent implements OnInit {
   nitelik: string = '';
   adres: string = '';
   koordinat: string = '';
+  userId:number;
   resetForm: any;
   constructor(private propertyService: PropertyService,
      private router: Router
@@ -84,6 +85,7 @@ export class AddTasinmazComponent implements OnInit {
   }
   onSubmit(): void {
     const newProperty = {
+      UserId:this.userId,
       TasinmazIsim: this.tasinmazIsim || 'Taşınmaz', 
       TasinmazParsel: this.parsel ? parseInt(this.parsel, 10) : 0,
       TasinmazNitelik: this.nitelik || '',

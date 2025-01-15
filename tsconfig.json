@@ -9,6 +9,7 @@
     "allowSyntheticDefaultImports": true,
     "module": "commonjs",
     "moduleResolution": "node",
+    "types": ["node"],
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "importHelpers": true,

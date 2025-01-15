@@ -42,6 +42,7 @@ export class LoginComponent {
           try {
             const decodedToken = jwt_decode<{ role: string }>(token);
             console.log('Rol:', decodedToken.role);
+            console.log('ID:', decodedToken.id);
           } catch (error) {
             console.error('Token çözümleme hatası:', error);
           }

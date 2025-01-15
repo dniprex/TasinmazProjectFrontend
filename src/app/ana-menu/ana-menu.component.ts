@@ -3,6 +3,7 @@ import { PropertyService } from '../services/property.service';
 import { Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 import * as XLSX from 'xlsx';
+import * as FileSaver from 'file-saver';
 
 @Component({
   selector: 'app-ana-menu',
@@ -15,6 +16,7 @@ export class AnaMenuComponent implements OnInit {
   pagedProperties: any[] = [];
   searchQuery: string = '';
   userRole: string | null = null;
+  userId: number | null = null;
   currentPage: number = 1;
   itemsPerPage: number = 10;
   alertMessage: string | null = null;
@@ -24,21 +26,52 @@ export class AnaMenuComponent implements OnInit {
     private propertyService: PropertyService,
     private router: Router,
     private authService: AuthService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.userRole = this.authService.getDecodedTokenRole();
+    this.userId = this.authService.getDecodedTokenUserId();
+
+    console.log("Kullanıcı Rolü:", this.userRole);
+    console.log("Kullanıcı ID:", this.userId);
 
     this.propertyService.getProperties().subscribe(
       (data) => {
-        this.properties = data;
-        this.filteredProperties = this.properties.slice();
-        this.updatePagedProperties();
+        console.log("API Verisi:", data);
+        if (Array.isArray(data) && data.length > 0) {
+          if (this.userRole === 'Admin') {
+            this.properties = data;
+            this.filteredProperties = this.properties.slice();
+          } else if (this.userRole === 'User') {
+            console.log("Kullanıcı için veri filtreleniyor");
+
+            if (this.userId !== null) {
+              data.forEach((property) => {
+                console.log(`property.userId: ${property.userId}, this.userId: ${this.userId}`);
+              });
+
+              this.properties = data.filter((property) => String(property.userId) === String(this.userId));
+              console.log("Kullanıcıya ait Taşınmazlar:", this.properties);
+            } else {
+              console.log("Kullanıcı ID'si tanımlanmamış");
+              this.properties = [];
+            }
+
+            this.filteredProperties = this.properties.slice();
+            console.log("Kullanıcıya ait Filtrelenmiş Taşınmazlar:", this.filteredProperties);
+          }
+          this.updatePagedProperties();
+        } else {
+          console.error("API'den geçerli veri alınamadı.");
+          this.properties = [];
+          this.filteredProperties = [];
+        }
       },
       (error) => {
-        console.error('API Error:', error);
+        console.error('API Hatası:', error);
       }
     );
+
   }
 
   searchProperties(): void {
@@ -142,11 +175,11 @@ export class AnaMenuComponent implements OnInit {
 
   exportToExcel(): void {
     const dataToExport = (this.searchQuery ? this.filteredProperties : this.properties).map(property => ({
-      Taşınmaz_ID:property.id,
+      Taşınmaz_ID: property.id,
       İl: property.mahalle.ilce.il.ilAdi,
       İlçe: property.mahalle.ilce.ilceAdi,
       Mahalle: property.mahalle.mahalleAdi,
-      Taşınmaz_Adı:property.tasinmazIsim,
+      Taşınmaz_Adı: property.tasinmazIsim,
       Ada: property.ada,
       Parsel: property.tasinmazParsel,
       Nitelik: property.tasinmazNitelik,
@@ -161,7 +194,6 @@ export class AnaMenuComponent implements OnInit {
     const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
     const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
 
-    const FileSaver = require('file-saver');
     FileSaver.saveAs(blob, 'Tasinmazlar.xlsx');
   }
 
