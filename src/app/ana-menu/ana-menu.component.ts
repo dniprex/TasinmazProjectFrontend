@@ -172,8 +172,8 @@ export class AnaMenuComponent implements OnInit {
           this.showAlert('Seçili veriler başarıyla silindi!', 'alert-success');
   
           const log = {
-            UserId: this.userId,
-            UserMail: this.userMail,
+            UserId: this.userId ? Number(this.userId) : 0,
+            UserMail: this.userMail|| 'unknown',
             Durum: 'Başarılı',
             IslemTip: 'Taşınmaz Silme',
             Aciklama: `${selectedProperties.length} taşınmaz silindi.`

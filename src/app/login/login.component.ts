@@ -49,21 +49,25 @@ export class LoginComponent {
   
             // Başarılı giriş logu
             const log = {
-              userId: decodedToken.id || 0,
+              userId: decodedToken.id ? Number(decodedToken.id):0, // null veya 0 olmadığından emin olun
               userMail: email || 'unknown',
-              durum: 'Başarılı',
+              durum: 'Başarılı', // "Başarılı" veya "Başarısız"
               islemTip: 'Giriş Yapma',
               aciklama: 'Kullanıcı giriş yaptı.'
             };
-  
+            
             this.logService.addLog(log).subscribe(
-              () => {
-                console.log('Log kaydedildi: Kullanıcı giriş yaptı.');
+              (response) => {
+
+                console.log('Gönderilen veri:', JSON.stringify(log));
+                console.log('Log başarıyla kaydedildi:', response);
               },
               (error) => {
-                console.error('Log kaydı sırasında hata oluştu:', error);
+                console.log('Gönderilen veri:', JSON.stringify(log));
+                console.error('Log kaydında hata:', error);
               }
             );
+            
           } catch (error) {
             console.error('Token çözümleme hatası:', error);
           }

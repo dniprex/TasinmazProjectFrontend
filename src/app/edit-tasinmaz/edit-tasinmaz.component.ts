@@ -181,17 +181,25 @@ export class EditTasinmazComponent implements OnInit {
         console.log(this.userId);
         console.log(this.userMail);
         const log = {
-          UserId: this.userId||0,
-          UserMail: this.userMail,
+          UserId: this.userId ? Number(this.userId) : 0,
+          UserMail: this.userMail || 'unknown',
           Durum: 'Başarılı',
-          IslemTip: 'Taşınmaz Ekleme',
-          Aciklama: `Taşınmaz eklendi: ${updatedProperty.tasinmazIsim}`
+          IslemTip: 'Taşınmaz Düzenleme',
+          Aciklama: `Taşınmaz düzenlendi: ${updatedProperty.tasinmazIsim}`
         };
         this.logService.addLog(log).subscribe();
         this.showAlert('Değişiklikler başarıyla kaydedildi!', 'alert-success');
         this.router.navigate(['/ana-menu']);
       },
       (error) => {
+        const log = {
+          UserId: this.userId ? Number(this.userId) : 0,
+          UserMail: this.userMail || 'unknown',
+          Durum: 'Başarısız',
+          IslemTip: 'Taşınmaz Düzenleme',
+          Aciklama: `Taşınmaz düzenlenemedi: ${updatedProperty.tasinmazIsim}`
+        };
+        this.logService.addLog(log).subscribe();
         console.error('Güncelleme sırasında hata oluştu:', error);
         this.showAlert(`Hata: ${error.message || 'Bilinmeyen bir hata oluştu.'}`, 'alert-danger');
       }

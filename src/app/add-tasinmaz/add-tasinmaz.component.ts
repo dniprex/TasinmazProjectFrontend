@@ -102,8 +102,8 @@ export class AddTasinmazComponent implements OnInit {
       (response) => {
         console.log('Taşınmaz başarıyla eklendi:', response);
         const log = {
-          UserId: this.userId,
-          UserMail: this.userMail,
+          UserId: this.userId ? Number(this.userId) : 0,
+          UserMail: this.userMail || 'unknown',
           Durum: 'Başarılı',
           IslemTip: 'Taşınmaz Ekleme',
           Aciklama: `Taşınmaz eklendi: ${newProperty.TasinmazIsim}`
@@ -113,6 +113,14 @@ export class AddTasinmazComponent implements OnInit {
         this.router.navigate(['/ana-menu']);
       },
       (error) => {
+        const log = {
+          UserId: this.userId ? Number(this.userId) : 0,
+          UserMail: this.userMail || 'unknown',
+          Durum: 'Başarısız',
+          IslemTip: 'Taşınmaz Ekleme',
+          Aciklama: `Taşınmaz eklenemedi: ${newProperty.TasinmazIsim}`
+        };
+        this.logService.addLog(log).subscribe();
         console.error('Taşınmaz eklenirken hata oluştu:', error);
         this.showAlert('Taşınmaz eklenirken bir hata oluştu!', 'alert-danger');
       }
