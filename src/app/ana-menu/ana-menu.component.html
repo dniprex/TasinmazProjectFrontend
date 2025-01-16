@@ -120,6 +120,27 @@
         <div *ngIf="alertMessage" [ngClass]="alertClass" class="alert mt-3" role="alert">
           {{ alertMessage }}
         </div>
+        
+<!-- Silme Onay Modali -->
+<div class="modal fade" id="deleteConfirmationModal" tabindex="-1" aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deleteConfirmationModalLabel">Onay</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
+      </div>
+      <div class="modal-body">
+        Seçili verileri silmek istediğinizden emin misiniz?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeDeleteModal()">Vazgeç</button>
+        <button type="button" class="btn btn-danger" (click)="confirmDelete()">Sil</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+        
 
         <div class="table-responsive">
           <table class="table table-bordered table-striped align-middle">

@@ -2,12 +2,14 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { UserService } from '../services/user.service';
 import { AuthService } from '../services/auth.service';
+import * as bootstrap from 'bootstrap';
 @Component({
   selector: 'app-users',
   templateUrl: './users.component.html',
   styleUrls: ['./users.component.css']
 })
 export class UsersComponent implements OnInit {
+  private deleteModal: bootstrap.Modal | null = null;
   users: any[] = []; // Tüm kullanıcılar
   filteredUsers: any[] = []; // Filtrelenmiş kullanıcılar
   pagedUsers: any[] = []; // Sayfa başına kullanıcılar
@@ -17,7 +19,7 @@ export class UsersComponent implements OnInit {
   alertMessage: string | null = null; // Uyarı mesajı
   alertClass: string = 'alert-light'; // Uyarı mesajının CSS sınıfı
 
-  constructor(private userService: UserService, private router: Router, private authService:AuthService) {}
+  constructor(private userService: UserService, private router: Router, private authService: AuthService) { }
 
   ngOnInit(): void {
     this.userService.getUsers().subscribe(
@@ -31,8 +33,21 @@ export class UsersComponent implements OnInit {
         console.error('Error fetching users:', error);
       }
     );
+    this.deleteModal = new bootstrap.Modal(
+      document.getElementById('deleteConfirmationModal') as HTMLElement
+    );
+  }
+  openDeleteModal(): void {
+    if (this.deleteModal) {
+      this.deleteModal.show();
+    }
   }
 
+  closeDeleteModal(): void {
+    if (this.deleteModal) {
+      this.deleteModal.hide();
+    }
+  }
   searchUsers(): void {
     if (!this.searchQuery) {
       this.filteredUsers = this.users.slice();
@@ -48,7 +63,34 @@ export class UsersComponent implements OnInit {
     this.currentPage = 1; // Yeni bir arama yapıldığında ilk sayfaya dön
     this.updatePagedUsers();
   }
+  confirmDelete(): void {
+    const selectedUsers = this.users.filter(user => user.selected);
 
+    if (selectedUsers.length === 0) {
+      this.showAlert('Lütfen silmek için bir kullanıcı seçin.', 'alert-danger');
+      this.closeDeleteModal();
+      return;
+    }
+
+    const deleteRequests = selectedUsers.map(user =>
+      this.userService.deleteUser(user.id).toPromise()
+    );
+
+    Promise.all(deleteRequests)
+      .then(() => {
+        this.users = this.users.filter(user => !user.selected);
+        this.filteredUsers = this.users.slice();
+        this.updatePagedUsers();
+        this.showAlert('Seçili kullanıcılar başarıyla silindi!', 'alert-success');
+      })
+      .catch(error => {
+        console.error('Silme işlemi başarısız:', error);
+        this.showAlert('Kullanıcılar silinirken bir hata oluştu.', 'alert-danger');
+      })
+      .finally(() => {
+        this.closeDeleteModal();
+      });
+  }
   updatePagedUsers(): void {
     const startIndex = (this.currentPage - 1) * this.itemsPerPage;
     const endIndex = startIndex + this.itemsPerPage;
@@ -95,29 +137,14 @@ export class UsersComponent implements OnInit {
 
   deleteSelectedUsers(): void {
     const selectedUsers = this.users.filter(user => user.selected);
+
     if (selectedUsers.length === 0) {
       this.showAlert('Lütfen silmek için bir kullanıcı seçin.', 'alert-danger');
       return;
     }
-    const confirmed = confirm('Seçili kullanıcıları silmek istediğinizden emin misiniz?');
-    if (confirmed) {
-      const deleteRequests = selectedUsers.map(user =>
-        this.userService.deleteUser(user.id).toPromise()
-      );
-      Promise.all(deleteRequests)
-        .then(() => {
-          this.users = this.users.filter(user => !user.selected);
-          this.filteredUsers = this.users.slice();
-          this.updatePagedUsers(); // Sayfa verilerini güncelle
-          this.showAlert('Seçili kullanıcılar başarıyla silindi!', 'alert-success');
-        })
-        .catch(error => {
-          console.error('Silme işlemi başarısız:', error);
-          this.showAlert('Kullanıcılar silinirken bir hata oluştu.', 'alert-danger');
-        });
-    }
-  }
 
+    this.openDeleteModal();
+  }
   showAlert(message: string, cssClass: string): void {
     this.alertMessage = message;
     this.alertClass = cssClass;

@@ -5,6 +5,7 @@ import { AuthService } from '../services/auth.service';
 import { LogService } from '../services/log.service';
 import * as XLSX from 'xlsx';
 import * as FileSaver from 'file-saver';
+import * as bootstrap from 'bootstrap';
 
 @Component({
   selector: 'app-ana-menu',
@@ -12,6 +13,7 @@ import * as FileSaver from 'file-saver';
   styleUrls: ['./ana-menu.component.css']
 })
 export class AnaMenuComponent implements OnInit {
+  private deleteModal: bootstrap.Modal | null = null;
   properties: any[] = [];
   filteredProperties: any[] = [];
   pagedProperties: any[] = [];
@@ -31,6 +33,7 @@ export class AnaMenuComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    this.deleteModal = new bootstrap.Modal(document.getElementById('deleteConfirmationModal') as HTMLElement);
     this.userRole = this.authService.getDecodedTokenRole();
     this.userId = this.authService.getDecodedTokenUserId();
     this.userMail = this.authService.getDecodedTokenEmail();
@@ -73,7 +76,16 @@ export class AnaMenuComponent implements OnInit {
     );
 
   }
-
+  openDeleteModal(): void {
+    if (this.deleteModal) {
+      this.deleteModal.show();
+    }
+  }
+  closeDeleteModal(): void {
+    if (this.deleteModal) {
+      this.deleteModal.hide();
+    }
+  }
   searchProperties(): void {
     if (!this.searchQuery) {
       this.filteredProperties = this.properties.slice();
@@ -153,49 +165,9 @@ export class AnaMenuComponent implements OnInit {
       return;
     }
   
-    const confirmed = confirm('Seçili verileri silmek istediğinizden emin misiniz?');
-    if (confirmed) {
-      console.log('Silinecek taşınmazlar:', selectedProperties);
-  
-      const deleteRequests = selectedProperties.map(property =>
-        this.propertyService.deleteProperty(property.id).toPromise()
-      );
-  
-      Promise.all(deleteRequests)
-        .then(() => {
-          console.log('Silme işlemi başarıyla tamamlandı.');
-  
-          this.properties = this.properties.filter(property => !property.selected);
-          this.filteredProperties = this.properties.slice(); 
-          this.updatePagedProperties(); 
-  
-          this.showAlert('Seçili veriler başarıyla silindi!', 'alert-success');
-  
-          const log = {
-            UserId: this.userId ? Number(this.userId) : 0,
-            UserMail: this.userMail,
-            Durum: 'Başarılı',
-            IslemTip: 'Taşınmaz Silme',
-            Aciklama: `${selectedProperties.length} taşınmaz silindi.`
-          };
-  
-          this.logService.addLog(log).subscribe(
-            () => {
-              console.log('Log başarıyla kaydedildi.');
-            },
-            (error) => {
-              console.error('Log kaydı sırasında hata oluştu:', error);
-            }
-          );
-        })
-        .catch(error => {
-          console.error('Silme işlemi başarısız:', error);
-          this.showAlert('Veriler silinirken bir hata oluştu.', 'alert-danger');
-        });
-    }
+    this.openDeleteModal();
   }
   
-
   exportToExcel(): void {
     const dataToExport = (this.searchQuery ? this.filteredProperties : this.properties).map(property => ({
       Taşınmaz_ID: property.id,
@@ -239,6 +211,47 @@ export class AnaMenuComponent implements OnInit {
     );
   }
 
+  confirmDelete(): void {
+    const selectedProperties = this.properties.filter(property => property.selected);
+
+    if (selectedProperties.length === 0) {
+      this.showAlert('Lütfen silmek için en az bir taşınmaz seçin.', 'alert-danger');
+      this.closeDeleteModal();
+      return;
+    }
+
+    const deleteRequests = selectedProperties.map(property =>
+      this.propertyService.deleteProperty(property.id).toPromise()
+    );
+
+    Promise.all(deleteRequests)
+      .then(() => {
+        this.properties = this.properties.filter(property => !property.selected);
+        this.filteredProperties = this.properties.slice();
+        this.updatePagedProperties();
+        this.showAlert('Seçili veriler başarıyla silindi!', 'alert-success');
+
+        // Log kaydı
+        const log = {
+          UserId: this.userId ? Number(this.userId) : 0,
+          UserMail: this.userMail,
+          Durum: 'Başarılı',
+          IslemTip: 'Taşınmaz Silme',
+          Aciklama: `${selectedProperties.length} taşınmaz silindi.`
+        };
+        this.logService.addLog(log).subscribe(
+          () => console.log('Log başarıyla kaydedildi.'),
+          (error) => console.error('Log kaydı sırasında hata oluştu:', error)
+        );
+      })
+      .catch(error => {
+        console.error('Silme işlemi başarısız:', error);
+        this.showAlert('Veriler silinirken bir hata oluştu.', 'alert-danger');
+      })
+      .finally(() => {
+        this.closeDeleteModal();
+      });
+  }
 
 
   logout(): void {

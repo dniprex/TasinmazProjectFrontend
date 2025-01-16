@@ -1,31 +1,74 @@
 <div class="container mt-5">
   <h2>Yeni Kullanıcı Ekle</h2>
-  <form (ngSubmit)="onSubmit()">
+  <form [formGroup]="userForm" (ngSubmit)="onSubmit()">
     <div class="mb-3">
       <label for="name" class="form-label">Ad</label>
-      <input type="text" id="name" [(ngModel)]="user.name" name="name" class="form-control" required />
+      <input
+        type="text"
+        id="name"
+        formControlName="name"
+        class="form-control"
+      />
+      <div *ngIf="userForm.get('name').invalid && userForm.get('name').touched" class="text-danger">
+        Ad zorunludur.
+      </div>
     </div>
+
     <div class="mb-3">
       <label for="surname" class="form-label">Soyad</label>
-      <input type="text" id="surname" [(ngModel)]="user.surname" name="surname" class="form-control" required />
+      <input
+        type="text"
+        id="surname"
+        formControlName="surname"
+        class="form-control"
+      />
+      <div *ngIf="userForm.get('surname').invalid && userForm.get('surname').touched" class="text-danger">
+        Soyad zorunludur.
+      </div>
     </div>
+
     <div class="mb-3">
       <label for="email" class="form-label">Email</label>
-      <input type="email" id="email" [(ngModel)]="user.email" name="email" class="form-control" required />
+      <input
+        type="email"
+        id="email"
+        formControlName="email"
+        class="form-control"
+      />
+      <div *ngIf="userForm.get('email').invalid && userForm.get('email').touched" class="text-danger">
+        Geçerli bir email adresi giriniz.
+      </div>
     </div>
+
     <div class="mb-3">
       <label for="password" class="form-label">Şifre</label>
-      <input type="password" id="password" [(ngModel)]="user.password" name="password" class="form-control" required />
+      <input
+        type="password"
+        id="password"
+        formControlName="password"
+        class="form-control"
+      />
+      <div *ngIf="userForm.get('password').invalid && userForm.get('password').touched" class="text-danger">
+        Şifre en az 8 karakter olmalıdır.
+      </div>
     </div>
+
     <div class="mb-3">
       <label for="role" class="form-label">Rol</label>
-      <input type="text" id="role" [(ngModel)]="user.userRole" name="role" class="form-control" />
+      <input
+        type="text"
+        id="role"
+        formControlName="userRole"
+        class="form-control"
+      />
     </div>
+
     <div class="mb-3">
       <label for="adres" class="form-label">Adres</label>
-      <textarea id="adres" [(ngModel)]="user.adres" name="adres" class="form-control"></textarea>
+      <textarea id="adres" formControlName="adres" class="form-control"></textarea>
     </div>
-    <button type="submit" class="btn btn-primary">Ekle</button>
+
+    <button type="submit" class="btn btn-primary" [disabled]="userForm.invalid">Ekle</button>
     <button type="button" (click)="cancel()" class="btn btn-secondary">İptal</button>
   </form>
 </div>
