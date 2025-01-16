@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { PropertyService } from '../services/property.service';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { LogService } from '../services/log.service';
+import { AuthService } from '../services/auth.service';
 @Component({
   selector: 'app-add-tasinmaz',
   templateUrl: './add-tasinmaz.component.html',
@@ -9,9 +10,9 @@ import { LogService } from '../services/log.service';
 })
 export class AddTasinmazComponent implements OnInit {
 
-  iller: any[] = []; // İl listesi
-  ilceler: any[] = []; // İlçe listesi
-  mahalleler: any[] = []; // Mahalle listesi
+  iller: any[] = [];
+  ilceler: any[] = [];
+  mahalleler: any[] = [];
 
   selectedIl: string = '';
   selectedIlce: string = '';
@@ -22,54 +23,78 @@ export class AddTasinmazComponent implements OnInit {
   nitelik: string = '';
   adres: string = '';
   koordinat: string = '';
-  userId: number;
+  userId: number = 0;
   userMail: string = '';
-  resetForm: any;
-  constructor(private propertyService: PropertyService,
+
+  alertMessage: string | null = null;
+  alertClass: string = 'alert-light';
+
+  constructor(
+    private propertyService: PropertyService,
     private router: Router,
-    private logService: LogService
+    private logService: LogService,
+    private authService: AuthService
   ) { }
 
   ngOnInit(): void {
+    this.loadIller();
+  }
+
+  loadIller(): void {
     this.propertyService.getIller().subscribe(
       (data) => {
         this.iller = data;
-        console.log(this.iller);
+        console.log('İller başarıyla yüklendi:', this.iller);
       },
       (error) => {
-        console.error('API Error:', error);
+        console.error('İl verileri yüklenirken hata oluştu:', error);
+        this.showAlert('İl verileri yüklenemedi. Lütfen tekrar deneyin.', 'alert-danger');
       }
     );
+  }
+
+  onIlChange(): void {
+    if (!this.selectedIl) {
+      this.ilceler = [];
+      this.mahalleler = [];
+      this.selectedIlce = '';
+      this.selectedMahalle = '';
+      return;
+    }
 
     this.propertyService.getIlceler(this.selectedIl).subscribe(
       (data) => {
         this.ilceler = data;
-        console.log(this.ilceler);
+        console.log('İlçeler başarıyla yüklendi:', this.ilceler);
+        this.mahalleler = [];
+        this.selectedIlce = '';
+        this.selectedMahalle = '';
       },
       (error) => {
-        console.error('API Error:', error);
+        console.error('İlçe verileri yüklenirken hata oluştu:', error);
+        this.showAlert('İlçe verileri yüklenemedi. Lütfen tekrar deneyin.', 'alert-danger');
       }
     );
+  }
+
+  onIlceChange(): void {
+    if (!this.selectedIlce) {
+      this.mahalleler = [];
+      this.selectedMahalle = '';
+      return;
+    }
 
     this.propertyService.getMahalleler(this.selectedIlce).subscribe(
       (data) => {
         this.mahalleler = data;
-        console.log(this.mahalleler);
+        console.log('Mahalleler başarıyla yüklendi:', this.mahalleler);
       },
       (error) => {
-        console.error('API Error:', error);
+        console.error('Mahalle verileri yüklenirken hata oluştu:', error);
+        this.showAlert('Mahalle verileri yüklenemedi. Lütfen tekrar deneyin.', 'alert-danger');
       }
     );
   }
-  onIlChange(): void {
-    const selectedIlId = this.selectedIl;
-    this.ilceler = this.ilceler.filter(ilce => ilce.ilId.toString() === selectedIlId);
-    this.selectedIlce = '';
-    this.selectedMahalle = '';
-  }
-
-  alertMessage: string | null = null;
-  alertClass: string = 'alert-light';
 
   showAlert(message: string, cssClass: string): void {
     this.alertMessage = message;
@@ -80,14 +105,18 @@ export class AddTasinmazComponent implements OnInit {
     }, 5000);
   }
 
-  onIlceChange(): void {
-    const selectedIlceId = this.selectedIlce;
-    this.mahalleler = this.mahalleler.filter(mahalle => mahalle.ilceId.toString() === selectedIlceId);
-    this.selectedMahalle = '';
-  }
   onSubmit(): void {
+    this.userId = this.authService.getDecodedTokenUserId();
+    this.userMail = this.authService.getDecodedTokenEmail();
+    
+    if (!this.tasinmazIsim || !this.selectedMahalle || !this.parsel) {
+      this.showAlert('Lütfen tüm zorunlu alanları doldurun.', 'alert-warning');
+      console.warn('Eksik bilgiler nedeniyle işlem yapılmadı.');
+      return;
+    }
+
     const newProperty = {
-      UserId: this.userId,
+      UserId: Number(this.userId),
       TasinmazIsim: this.tasinmazIsim || 'Taşınmaz',
       TasinmazParsel: this.parsel ? parseInt(this.parsel, 10) : 0,
       TasinmazNitelik: this.nitelik || '',
@@ -97,10 +126,12 @@ export class AddTasinmazComponent implements OnInit {
       KoordinatBilgisi: this.koordinat || '',
     };
 
-    console.log('Gönderilen veri:', newProperty);
+    console.log('Gönderilecek taşınmaz verisi:', newProperty);
+    console.log("USER ID:" + this.userId)
     this.propertyService.addProperty(newProperty).subscribe(
       (response) => {
         console.log('Taşınmaz başarıyla eklendi:', response);
+
         const log = {
           UserId: this.userId ? Number(this.userId) : 0,
           UserMail: this.userMail || 'unknown',
@@ -108,11 +139,14 @@ export class AddTasinmazComponent implements OnInit {
           IslemTip: 'Taşınmaz Ekleme',
           Aciklama: `Taşınmaz eklendi: ${newProperty.TasinmazIsim}`
         };
+
         this.logService.addLog(log).subscribe();
-        this.showAlert('Taşınmaz başarıyla eklendi!', 'alert-succes');
+        this.showAlert('Taşınmaz başarıyla eklendi!', 'alert-success');
         this.router.navigate(['/ana-menu']);
       },
       (error) => {
+        console.error('Taşınmaz eklenirken hata oluştu:', error);
+
         const log = {
           UserId: this.userId ? Number(this.userId) : 0,
           UserMail: this.userMail || 'unknown',
@@ -120,14 +154,15 @@ export class AddTasinmazComponent implements OnInit {
           IslemTip: 'Taşınmaz Ekleme',
           Aciklama: `Taşınmaz eklenemedi: ${newProperty.TasinmazIsim}`
         };
+
         this.logService.addLog(log).subscribe();
-        console.error('Taşınmaz eklenirken hata oluştu:', error);
-        this.showAlert('Taşınmaz eklenirken bir hata oluştu!', 'alert-danger');
+        const errorMessage = error.error.message || 'Bilinmeyen bir hata oluştu.';
+        this.showAlert(errorMessage, 'alert-danger');
       }
     );
   }
-  cancel() {
+
+  cancel(): void {
     this.router.navigate(['/ana-menu']);
   }
-
 }

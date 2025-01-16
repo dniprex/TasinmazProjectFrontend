@@ -12,22 +12,23 @@
         <option *ngFor="let il of iller" [value]="il.id">{{ il.ilAdi }}</option>
       </select>
     </div>
-
+    
     <div class="mb-3">
       <label for="ilce" class="form-label">İlçe</label>
-      <select class="form-control" id="ilce" [(ngModel)]="selectedIlce" name="ilce" (change)="onIlceChange()">
+      <select class="form-control" id="ilce" [(ngModel)]="selectedIlce" name="ilce" (change)="onIlceChange()" [disabled]="!selectedIl">
         <option value="">İlçe seçiniz</option>
         <option *ngFor="let ilce of ilceler" [value]="ilce.id">{{ ilce.ilceAdi }}</option>
       </select>
     </div>
-
+    
     <div class="mb-3">
       <label for="mahalle" class="form-label">Mahalle</label>
-      <select class="form-control" id="mahalle" [(ngModel)]="selectedMahalle" name="mahalle">
+      <select class="form-control" id="mahalle" [(ngModel)]="selectedMahalle" name="mahalle" [disabled]="!selectedIlce">
         <option value="">Mahalle seçiniz</option>
         <option *ngFor="let mahalle of mahalleler" [value]="mahalle.id">{{ mahalle.mahalleAdi }}</option>
       </select>
     </div>
+    
     <div class="mb-3">
       <label for="tasinmazIsim" class="form-label">Taşınmaz İsim</label>
       <input type="text" class="form-control" id="tasinmazIsim" [(ngModel)]="tasinmazIsim" name="tasinmazIsim"
