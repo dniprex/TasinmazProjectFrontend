@@ -173,7 +173,7 @@ export class AnaMenuComponent implements OnInit {
   
           const log = {
             UserId: this.userId ? Number(this.userId) : 0,
-            UserMail: this.userMail|| 'unknown',
+            UserMail: this.userMail,
             Durum: 'Başarılı',
             IslemTip: 'Taşınmaz Silme',
             Aciklama: `${selectedProperties.length} taşınmaz silindi.`
