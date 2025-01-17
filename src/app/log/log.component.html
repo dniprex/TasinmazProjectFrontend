@@ -91,7 +91,12 @@
   <div class="container-fluid mt-5 pt-4">
     <div class="card shadow-sm">
       <div class="card-body">
-        <h3 class="mb-3">Log İşlemleri</h3>
+        <div class="d-flex justify-content-between mb-3">
+          <h3 class="mb-0">Log İşlemleri</h3>
+          <button class="btn btn-success" (click)="exportToExcel()">
+            <i class="fas fa-file-excel"></i> Excel'e Aktar
+          </button>
+        </div>
 
         <div class="table-responsive">
           <table class="table table-bordered table-striped align-middle">

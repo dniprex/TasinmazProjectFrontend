@@ -68,7 +68,7 @@
       <textarea id="adres" formControlName="adres" class="form-control"></textarea>
     </div>
 
-    <button type="submit" class="btn btn-primary" [disabled]="userForm.invalid">Ekle</button>
+    <button type="button" class="btn btn-success me-2" (click)="onSubmit()" [disabled]="userForm.invalid">Kaydet</button>
     <button type="button" (click)="cancel()" class="btn btn-secondary">İptal</button>
   </form>
 </div>

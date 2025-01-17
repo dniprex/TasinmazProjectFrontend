@@ -5,29 +5,29 @@
     <form (ngSubmit)="onSubmit()">
       <div class="mb-3">
         <label for="name" class="form-label">Ad</label>
-        <input type="text" id="name" [(ngModel)]="user.name" name="name" class="form-control" />
+        <input type="text" id="name" [(ngModel)]="user.name" name="name" class="form-control" required/>
       </div>
       <div class="mb-3">
         <label for="surname" class="form-label">Soyad</label>
-        <input type="text" id="surname" [(ngModel)]="user.surname" name="surname" class="form-control" />
+        <input type="text" id="surname" [(ngModel)]="user.surname" name="surname" class="form-control" required/>
       </div>
       <div class="mb-3">
         <label for="email" class="form-label">Email</label>
-        <input type="email" id="email" [(ngModel)]="user.email" name="email" class="form-control" />
+        <input type="email" id="email" [(ngModel)]="user.email" name="email" class="form-control" required/>
       </div>
       <div class="mb-3">
         <label for="password" class="form-label">Şifre</label>
-        <input type="password" id="password" [(ngModel)]="user.password" name="password" class="form-control" />
+        <input type="password" id="password" [(ngModel)]="user.password" name="password" class="form-control" required/>
       </div>
       <div class="mb-3">
         <label for="role" class="form-label">Rol</label>
-        <input type="text" id="role" [(ngModel)]="user.userRole" name="role" class="form-control" />
+        <input type="text" id="role" [(ngModel)]="user.userRole" name="role" class="form-control" required/>
       </div>
       <div class="mb-3">
         <label for="adres" class="form-label">Adres</label>
         <textarea id="adres" [(ngModel)]="user.adres" name="adres" class="form-control"></textarea>
       </div>
-      <button type="submit" class="btn btn-primary">Güncelle</button>
+      <button type="button" class="btn btn-success me-2" (click)="onSubmit()">Güncelle</button>
       <button type="button" (click)="cancel()" class="btn btn-secondary">İptal</button>
     </form>
   </div>  

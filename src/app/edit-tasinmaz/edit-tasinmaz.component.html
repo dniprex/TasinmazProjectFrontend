@@ -38,7 +38,8 @@
       </div>
       <div class="col-md-4 mb-3">
         <label for="ada" class="form-label">Ada</label>
-        <input type="text" class="form-control" id="ada" name="ada" [(ngModel)]="ada" placeholder="Ada giriniz" required/>
+        <input type="text" class="form-control" id="ada" name="ada" [(ngModel)]="ada" placeholder="Ada giriniz"
+          required />
       </div>
       <div class="col-md-4 mb-3">
         <label for="parsel" class="form-label">Parsel</label>
@@ -64,9 +65,7 @@
 
     <!-- Butonlar -->
     <div class="text-center mt-3">
-      <button type="button" class="btn btn-primary" (click)="saveChanges()">
-        Kaydet
-      </button>
+      <button type="button" class="btn btn-success me-2" (click)="saveChanges()">Kaydet</button>
       <button type="button" class="btn btn-secondary" (click)="cancel()">İptal</button>
     </div>
   </form>

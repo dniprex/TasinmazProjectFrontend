@@ -1,21 +1,22 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { UserService } from '../services/user.service';
 import { AuthService } from '../services/auth.service';
 import * as bootstrap from 'bootstrap';
+
 @Component({
   selector: 'app-users',
   templateUrl: './users.component.html',
   styleUrls: ['./users.component.css']
 })
-export class UsersComponent implements OnInit {
+export class UsersComponent implements OnInit, AfterViewInit {
   private deleteModal: bootstrap.Modal | null = null;
-  users: any[] = []; 
-  filteredUsers: any[] = []; 
-  pagedUsers: any[] = []; 
-  searchQuery: string = ''; 
-  currentPage: number = 1; 
-  itemsPerPage: number = 10; 
+  users: any[] = [];
+  filteredUsers: any[] = [];
+  pagedUsers: any[] = [];
+  searchQuery: string = '';
+  currentPage: number = 1;
+  itemsPerPage: number = 10;
   alertMessage: string | null = null;
   alertClass: string = 'alert-light';
 
@@ -27,16 +28,23 @@ export class UsersComponent implements OnInit {
         console.log('API Verisi:', data);
         this.users = data;
         this.filteredUsers = this.users.slice();
-        this.updatePagedUsers(); 
+        this.updatePagedUsers();
       },
       (error) => {
         console.error('Error fetching users:', error);
       }
     );
-    this.deleteModal = new bootstrap.Modal(
-      document.getElementById('deleteConfirmationModal') as HTMLElement
-    );
   }
+
+  ngAfterViewInit(): void {
+    const modalElement = document.getElementById('deleteConfirmationModal') as HTMLElement;
+    if (modalElement) {
+      this.deleteModal = new bootstrap.Modal(modalElement);
+    } else {
+      console.error('Modal element not found in DOM.');
+    }
+  }
+
   openDeleteModal(): void {
     if (this.deleteModal) {
       this.deleteModal.show();
@@ -48,6 +56,7 @@ export class UsersComponent implements OnInit {
       this.deleteModal.hide();
     }
   }
+
   searchUsers(): void {
     if (!this.searchQuery) {
       this.filteredUsers = this.users.slice();
@@ -63,6 +72,7 @@ export class UsersComponent implements OnInit {
     this.currentPage = 1;
     this.updatePagedUsers();
   }
+
   confirmDelete(): void {
     const selectedUsers = this.users.filter(user => user.selected);
 
@@ -91,6 +101,7 @@ export class UsersComponent implements OnInit {
         this.closeDeleteModal();
       });
   }
+
   updatePagedUsers(): void {
     const startIndex = (this.currentPage - 1) * this.itemsPerPage;
     const endIndex = startIndex + this.itemsPerPage;
@@ -145,6 +156,7 @@ export class UsersComponent implements OnInit {
 
     this.openDeleteModal();
   }
+
   showAlert(message: string, cssClass: string): void {
     this.alertMessage = message;
     this.alertClass = cssClass;

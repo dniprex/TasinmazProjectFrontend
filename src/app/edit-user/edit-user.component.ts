@@ -14,48 +14,56 @@ export class EditUserComponent implements OnInit {
     private userService: UserService,
     private router: Router) { }
 
-    ngOnInit(): void {
-      this.id = this.route.snapshot.params['id'];
-      this.userService.getUserById(this.id).subscribe(
-        (response) => {
-          if (response) {
-            console.log("hata",response);
-            this.user = response;
-          } else {
-            alert('Kullanıcı bilgileri yüklenemedi.');
-            this.router.navigate(['/users']);
-          }
-        },
-        (error) => {
-          console.error('Kullanıcı bilgisi alınırken hata oluştu:', error);
-          alert('Bir hata oluştu. Lütfen tekrar deneyin.');
+  ngOnInit(): void {
+    this.id = this.route.snapshot.params['id'];
+    this.userService.getUserById(this.id).subscribe(
+      (response) => {
+        if (response) {
+          console.log("hata", response);
+          this.user = response;
+        } else {
+          alert('Kullanıcı bilgileri yüklenemedi.');
           this.router.navigate(['/users']);
         }
-      );
-    }
-    
-
-    onSubmit(): void {
-      if (!this.user || !this.id) {
-        alert('Gerekli bilgiler eksik. Lütfen tüm alanları doldurun.');
-        return;
+      },
+      (error) => {
+        console.error('Kullanıcı bilgisi alınırken hata oluştu:', error);
+        alert('Bir hata oluştu. Lütfen tekrar deneyin.');
+        this.router.navigate(['/users']);
       }
-    
-      this.userService.updateUser(this.id, this.user).subscribe(
-        (response) => {
-          console.log('Kullanıcı başarıyla güncellendi!', response);
-          alert('Kullanıcı başarıyla güncellendi!');
+    );
+  }
+
+
+  onSubmit(): void {
+    if (!this.user || !this.id) {
+      alert('Gerekli bilgiler eksik. Lütfen tüm alanları doldurun.');
+      return;
+    }
+
+    this.userService.updateUser(this.id, this.user).subscribe(
+      (response) => {
+        console.log('Kullanıcı başarıyla güncellendi!', response);
+        alert(response); // API'nin döndürdüğü düz metin
+        this.router.navigate(['/users']);
+      },
+      (error) => {
+        if (error.status === 200 && typeof error.error === 'string') {
+          // Yanıt düz metinse, hata yerine başarı mesajı
+          console.log('Kullanıcı başarıyla güncellendi!', error.error);
+          alert(error.error);
           this.router.navigate(['/users']);
-        },
-        (error) => {
+        } else {
           console.error('Kullanıcı güncellenirken hata oluştu:', error);
           alert('Kullanıcı güncellenirken bir hata oluştu. Lütfen tekrar deneyin.');
           this.router.navigate(['/users']);
         }
-      );
-    }
-    
-  
+      }
+    );
+
+  }
+
+
 
   cancel(): void {
     this.router.navigate(['/users']);

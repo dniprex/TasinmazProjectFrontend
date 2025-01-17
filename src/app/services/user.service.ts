@@ -21,7 +21,7 @@ export class UserService {
   }
   
   updateUser(id: number, user: Partial<User>): Observable<any> {
-    return this.http.patch(`${this.apiUrl}/Auth/users/${id}`, user);
+    return this.http.patch(`${this.apiUrl}/Auth/users/${id}`, user, { responseType: 'text' });
   }
   updateUsers(id: number, user: any): Observable<any> {
     return this.http.put<any>(`${this.apiUrl}/Auth/Users/${id}`, user);
