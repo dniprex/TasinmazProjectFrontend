@@ -1,0 +1,16 @@
+.table-striped tbody tr:nth-of-type(even) {
+    background-color: #ffffff; /* Beyaz */
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: #f9f9f9; /* Daha açık gri */
+}
+
+.table-striped th {
+    background-color: #000000; /* Siyah */
+    color: #ffffff; /* Beyaz yazı */
+}
+
+.table-striped td {
+    color: #000000; /* Siyah yazı */
+}

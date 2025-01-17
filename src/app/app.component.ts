@@ -7,7 +7,7 @@ import { UserService } from './services/user.service';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit {
-  properties: any[] = []; // API'den gelen veriler burada tutulur
+  properties: any[] = [];
   iller: any[] = [];
   ilceler: any[] = [];
   mahalleler: any[] = [];

@@ -8,6 +8,7 @@ import { UsersComponent } from './users/users.component';
 import { AddUserComponent } from './add-user/add-user.component';
 import { EditUserComponent } from './edit-user/edit-user.component';
 import { LogComponent } from './log/log.component';
+import { MapComponent } from './map/map.component';
 const routes: Routes = [
   { path: "", redirectTo: '/login', pathMatch: 'full' },
   { path: "login", component: LoginComponent },
@@ -17,7 +18,8 @@ const routes: Routes = [
   { path: "users", component: UsersComponent },
   { path: 'add-user', component: AddUserComponent },
   { path: 'edit-user/:id', component: EditUserComponent },
-  { path: 'log', component: LogComponent},
+  { path: 'log', component: LogComponent },
+  { path: 'map', component: MapComponent },
 ];
 
 @NgModule({

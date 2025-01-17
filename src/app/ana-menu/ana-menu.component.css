@@ -1,0 +1,75 @@
+.map-container {
+  width: 100%;
+  height: 600px;
+  margin: 0; /* Margin sıfırlandı */
+  padding: 0; /* Padding sıfırlandı */
+  border: 1px solid #ddd;
+  position: relative; /* Ekstra kontrol */
+}
+.opacity-controls {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  background: rgba(255, 255, 255, 0.8);
+  padding: 10px;
+  border-radius: 5px;
+  box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.3);
+  font-size: 14px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+  .table-responsive {
+    margin-top: 0; 
+    padding-top: 0;
+  }
+
+  .popup {
+    background-color: white;
+    border: 1px solid black;
+    padding: 5px;
+    border-radius: 5px;
+    display: none;
+    font-size: 14px;
+    box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.5);
+  }
+  .table-striped tbody tr:nth-of-type(even) {
+    background-color: #ffffff; /* Beyaz */
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: #f9f9f9; /* Daha açık gri */
+}
+
+.table-striped th {
+    background-color: #000000; /* Siyah */
+    color: #ffffff; /* Beyaz yazı */
+}
+
+.table-striped td {
+    color: #000000; /* Siyah yazı */
+}
+.layer-switcher {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  display: flex;
+  gap: 10px;
+  z-index: 1000;
+}
+
+.layer-switcher button {
+  background-color: #6c757d;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.layer-switcher button.active {
+  background-color: #198754;
+}
+
+  

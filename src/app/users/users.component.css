@@ -1,0 +1,55 @@
+.table-striped tbody tr:nth-of-type(even) {
+    background-color: #ffffff; /* Beyaz */
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: #f9f9f9; /* Daha açık gri */
+}
+
+.table-striped th {
+    background-color: #000000; /* Siyah */
+    color: #ffffff; /* Beyaz yazı */
+}
+
+.table-striped td {
+    color: #000000; /* Siyah yazı */
+}
+
+
+  .action-buttons button {
+    background-color: white;
+    color: black;
+    border: 1px solid #ccc;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .action-buttons button:hover {
+    background-color: #f8f8f8;
+    color: #000;
+    border-color: #bbb;
+  }
+
+  .action-buttons svg {
+    fill: black;
+    width: 16px;
+    height: 16px;
+  }
+
+  .logout-button {
+    background-color: white;
+    color: black;
+    border: 1px solid #ccc;
+    padding: 5px 10px;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .logout-button:hover {
+    background-color: #f8f8f8;
+    color: #000;
+    border-color: #bbb;
+  }

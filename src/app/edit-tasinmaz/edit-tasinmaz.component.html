@@ -1,80 +1,95 @@
-<div class="container mt-4">
+<div class="container mt-5">
   <h2>Taşınmaz Düzenle</h2>
-  <form #editForm="ngForm">
+  <form (ngSubmit)="onSubmit()">
     <div *ngIf="alertMessage" [ngClass]="alertClass" class="alert mt-3" role="alert">
       {{ alertMessage }}
     </div>
-    <!-- İl Dropdown -->
-    <!-- İl -->
-    <div class="mb-3">
-      <label for="il" class="form-label">İl</label>
-      <select class="form-control" id="il" [(ngModel)]="selectedIl" name="il" (change)="onIlChange()" disabled>
-        <option value="">İl seçiniz</option>
-        <option *ngFor="let il of iller" [value]="il.id">{{ il.ilAdi }}</option>
-      </select>
+
+    <!-- Form Alanları -->
+    <div class="row mt-3">
+      <div class="col-md-4 mb-3">
+        <label for="il" class="form-label">İl</label>
+        <select class="form-control" id="il" name="il" [(ngModel)]="selectedIl" (change)="onIlChange()">
+          <option value="">İl seçiniz</option>
+          <option *ngFor="let il of iller" [value]="il.id">{{ il.ilAdi }}</option>
+        </select>
+      </div>
+      <div class="col-md-4 mb-3">
+        <label for="ilce" class="form-label">İlçe</label>
+        <select
+          class="form-control"
+          id="ilce"
+          name="ilce"
+          [(ngModel)]="selectedIlce"
+          (change)="onIlceChange()"
+          [disabled]="!selectedIl"
+        >
+          <option value="">İlçe seçiniz</option>
+          <option *ngFor="let ilce of ilceler" [value]="ilce.id">{{ ilce.ilceAdi }}</option>
+        </select>
+      </div>
+      <div class="col-md-4 mb-3">
+        <label for="mahalle" class="form-label">Mahalle</label>
+        <select
+          class="form-control"
+          id="mahalle"
+          name="mahalle"
+          [(ngModel)]="selectedMahalle"
+          [disabled]="!selectedIlce"
+        >
+          <option value="">Mahalle seçiniz</option>
+          <option *ngFor="let mahalle of mahalleler" [value]="mahalle.id">{{ mahalle.mahalleAdi }}</option>
+        </select>
+      </div>
+
+      <div class="col-md-4 mb-3">
+        <label for="tasinmazIsim" class="form-label">Taşınmaz İsim</label>
+        <input
+          type="text"
+          class="form-control"
+          id="tasinmazIsim"
+          name="tasinmazIsim"
+          [(ngModel)]="tasinmazIsim"
+          placeholder="Taşınmaz ismi giriniz"
+          required
+        />
+      </div>
+      <div class="col-md-4 mb-3">
+        <label for="ada" class="form-label">Ada</label>
+        <input type="text" class="form-control" id="ada" name="ada" [(ngModel)]="ada" placeholder="Ada giriniz" />
+      </div>
+      <div class="col-md-4 mb-3">
+        <label for="parsel" class="form-label">Parsel</label>
+        <input
+          type="text"
+          class="form-control"
+          id="parsel"
+          name="parsel"
+          [(ngModel)]="parsel"
+          placeholder="Parsel giriniz"
+        />
+      </div>
+      <!-- Üçüncü Sıra -->
+      <div class="col-md-4 mb-3">
+        <label for="nitelik" class="form-label">Nitelik</label>
+        <input type="text" class="form-control" id="nitelik" name="nitelik" [(ngModel)]="nitelik" placeholder="Nitelik giriniz" required />
+      </div>
+      <div class="col-md-4 mb-3">
+        <label for="adres" class="form-label">Adres</label>
+        <input type="text" class="form-control" id="adres" name="adres" [(ngModel)]="adres" placeholder="Adres giriniz" required />
+      </div>
+      <div class="col-md-4 mb-3">
+        <label for="koordinat" class="form-label">Koordinat</label>
+        <input type="text" class="form-control" id="koordinat" name="koordinat" [(ngModel)]="koordinat" readonly />
+      </div>
     </div>
 
-    <!-- İlçe -->
-    <div class="mb-3">
-      <label for="ilce" class="form-label">İlçe</label>
-      <select class="form-control" id="ilce" [(ngModel)]="selectedIlce" name="ilce" (change)="onIlceChange()" disabled>
-        <option value="">İlçe seçiniz</option>
-        <option *ngFor="let ilce of ilceler" [value]="ilce.id">{{ ilce.ilceAdi }}</option>
-      </select>
+    <!-- Butonlar -->
+    <div class="text-center mt-3">
+      <button type="button" class="btn btn-primary" (click)="saveChanges()">
+        Kaydet
+      </button>
+      <button type="button" class="btn btn-secondary" (click)="cancel()">İptal</button>
     </div>
-
-    <!-- Mahalle -->
-    <div class="mb-3">
-      <label for="mahalle" class="form-label">Mahalle</label>
-      <select class="form-control" id="mahalle" [(ngModel)]="selectedMahalle" name="mahalle" disabled>
-        <option value="">Mahalle seçiniz</option>
-        <option *ngFor="let mahalle of mahalleler" [value]="mahalle.id">{{ mahalle.mahalleAdi }}</option>
-      </select>
-    </div>
-
-
-    <!-- Taşınmaz İsim -->
-    <div class="mb-3">
-      <label for="tasinmazIsim" class="form-label">Taşınmaz İsmi</label>
-      <input type="text" id="tasinmazIsim" class="form-control" [(ngModel)]="tasinmazIsim" name="tasinmazIsim"
-        required />
-    </div>
-
-    <!-- ADA -->
-    <div class="mb-3">
-      <label for="ada" class="form-label">ADA</label>
-      <input type="text" id="ada" class="form-control" [(ngModel)]="ada" name="ada" required />
-    </div>
-
-    <!-- Parsel -->
-    <div class="mb-3">
-      <label for="parsel" class="form-label">Parsel</label>
-      <input type="text" id="parsel" class="form-control" [(ngModel)]="parsel" name="parsel" required />
-    </div>
-
-    <!-- Nitelik -->
-    <div class="mb-3">
-      <label for="nitelik" class="form-label">Nitelik</label>
-      <input type="text" id="nitelik" class="form-control" [(ngModel)]="nitelik" name="nitelik" required />
-    </div>
-
-    <!-- Adres -->
-    <div class="mb-3">
-      <label for="adres" class="form-label">Adres</label>
-      <textarea id="adres" class="form-control" [(ngModel)]="adres" name="adres" required></textarea>
-    </div>
-
-    <!-- Koordinat -->
-    <div class="mb-3">
-      <label for="koordinat" class="form-label">Koordinat</label>
-      <input type="text" id="koordinat" class="form-control" [(ngModel)]="koordinat" name="koordinat" required
-        disabled />
-    </div>
-
-    <!-- Butonlar  [disabled]="editForm.invalid"-->
-    <button type="button" class="btn btn-primary" (click)="saveChanges()">
-      Kaydet
-    </button>
-    <button type="button" class="btn btn-secondary" (click)="cancel()">İptal</button>
   </form>
 </div>

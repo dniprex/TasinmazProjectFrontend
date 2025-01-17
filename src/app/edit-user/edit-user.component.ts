@@ -48,8 +48,8 @@ export class EditUserComponent implements OnInit {
           this.router.navigate(['/users']);
         },
         (error) => {
-         // console.error('Kullanıcı güncellenirken hata oluştu:', error);
-         // alert('Kullanıcı güncellenirken bir hata oluştu. Lütfen tekrar deneyin.');
+          console.error('Kullanıcı güncellenirken hata oluştu:', error);
+          alert('Kullanıcı güncellenirken bir hata oluştu. Lütfen tekrar deneyin.');
           this.router.navigate(['/users']);
         }
       );

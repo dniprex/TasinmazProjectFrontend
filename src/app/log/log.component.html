@@ -7,10 +7,61 @@
   <title>Log İşlemleri</title>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <style>
+    .table-responsive {
+      margin-top: 0; 
+      padding-top: 0;
+    }
+
+    .table-striped tbody tr:nth-of-type(even) {
+      background-color: #f8f9fa; /* Açık gri */
+    }
+    
+    .table-striped tbody tr:nth-of-type(odd) {
+      background-color: white; /* Beyaz */
+    }
+    
+    .table-striped td {
+      color: #212529; /* Siyah yazı rengi */
+    }
+
+    .pagination .page-item .page-link {
+      background-color: #f0f0f0; /* Açık gri renk */
+      color: #000; /* Siyah yazı */
+      border: 1px solid #ccc; /* Gri kenarlık */
+    }
+
+    .pagination .page-item.active .page-link {
+      background-color: #d9d9d9; /* Daha koyu gri renk */
+      border-color: #bbb; /* Daha koyu kenarlık */
+      color: #000; /* Siyah yazı */
+    }
+
+    .pagination .page-item.disabled .page-link {
+      background-color: #e9ecef; /* Pasifler için gri */
+      color: #6c757d; /* Daha açık gri yazı */
+    }
+
+    .logout-button {
+      background-color: white;
+      color: black;
+      border: 1px solid #ccc;
+      padding: 5px 10px;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .logout-button:hover {
+      background-color: #f8f8f8;
+      color: #000;
+      border-color: #bbb;
+    }
+  </style>
 </head>
 
 <body>
-  <!-- Navbar -->
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
     <div class="container-fluid">
       <a class="navbar-brand">Log İşlemleri</a>
@@ -21,20 +72,13 @@
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
           <li class="nav-item">
-            <!-- Admin değilse buton devre dışı -->
-            <a class="nav-link " aria-current="page" routerLink='/ana-menu' >
-              Mevcut Taşınmazlar
-            </a>
+            <a class="nav-link" routerLink="/ana-menu">Mevcut Taşınmazlar</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link active" routerLink='/log' >
-              Log İşlemleri
-            </a>
+            <a class="nav-link active" routerLink="/log">Log İşlemleri</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" routerLink='/users' >
-              Kullanıcı İşlemleri
-            </a>
+            <a class="nav-link" routerLink="/users">Kullanıcı İşlemleri</a>
           </li>
         </ul>
         <button class="logout-button" (click)="logout()">
@@ -67,7 +111,7 @@
                 <td>{{ log.durum }}</td>
                 <td>{{ log.islemTip }}</td>
                 <td>{{ log.aciklama }}</td>
-                <td>{{ log.tarihSaat | date: 'dd-MM-yyyy'}}</td>
+                <td>{{ log.tarihSaat | date: 'dd-MM-yyyy' }}</td>
                 <td>{{ log.tarihSaat | date: 'HH:mm:ss' }}</td>
               </tr>
             </tbody>

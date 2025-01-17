@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
 import { PropertyService } from '../services/property.service';
 import { Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
@@ -6,7 +6,18 @@ import { LogService } from '../services/log.service';
 import * as XLSX from 'xlsx';
 import * as FileSaver from 'file-saver';
 import * as bootstrap from 'bootstrap';
-
+import Map from 'ol/Map';
+import View from 'ol/View';
+import TileLayer from 'ol/layer/Tile';
+import OSM from 'ol/source/OSM';
+import { Feature } from 'ol';
+import { Point } from 'ol/geom';
+import { Vector as VectorLayer } from 'ol/layer';
+import { Vector as VectorSource } from 'ol/source';
+import { fromLonLat } from 'ol/proj';
+import { Style, Icon } from 'ol/style';
+import Overlay from 'ol/Overlay';
+import XYZ from "ol/source/XYZ";
 @Component({
   selector: 'app-ana-menu',
   templateUrl: './ana-menu.component.html',
@@ -14,6 +25,8 @@ import * as bootstrap from 'bootstrap';
 })
 export class AnaMenuComponent implements OnInit {
   private deleteModal: bootstrap.Modal | null = null;
+  @ViewChild('mapContainer') mapContainer!: ElementRef;
+  @ViewChild('popup') popupElement!: ElementRef
   properties: any[] = [];
   filteredProperties: any[] = [];
   pagedProperties: any[] = [];
@@ -25,6 +38,8 @@ export class AnaMenuComponent implements OnInit {
   alertMessage: string | null = null;
   alertClass: string = 'alert-light';
   userMail: string = '';
+  map!: Map;
+  overlay!: Overlay;
   constructor(
     private propertyService: PropertyService,
     private router: Router,
@@ -64,6 +79,7 @@ export class AnaMenuComponent implements OnInit {
             console.log("Kullanıcıya ait Filtrelenmiş Taşınmazlar:", this.filteredProperties);
           }
           this.updatePagedProperties();
+          this.initializeMap();
         } else {
           console.error("API'den geçerli veri alınamadı.");
           this.properties = [];
@@ -86,24 +102,242 @@ export class AnaMenuComponent implements OnInit {
       this.deleteModal.hide();
     }
   }
+  initializeMap(): void {
+    // Eğer map zaten oluşturulmuşsa, hedefi temizle
+    if (this.map) {
+      this.map.setTarget(null); // Mevcut haritayı DOM'dan ayırır
+    }
+
+    // OpenStreetMap Katmanı
+    const osmLayer = new TileLayer({
+      source: new OSM(),
+      visible: true, // Başlangıçta görünür
+    });
+
+    // Google Maps Katmanı
+    const googleLayer = new TileLayer({
+      source: new XYZ({
+        url: 'http://mt1.google.com/vt/lyrs=r&x={x}&y={y}&z={z}',
+      }),
+      visible: false,
+    });
+
+    const vectorSource = new VectorSource();
+
+    this.filteredProperties.forEach((property) => {
+      if (property.koordinatBilgisi) {
+        const coordinates = property.koordinatBilgisi.split(',').map((coord: string) => parseFloat(coord.trim()));
+        const feature = new Feature({
+          geometry: new Point(fromLonLat(coordinates)),
+          data: property,
+        });
+        feature.setStyle(
+          new Style({
+            image: new Icon({
+              src: 'https://cdn-icons-png.flaticon.com/512/684/684908.png',
+              scale: 0.05,
+            }),
+          })
+        );
+        vectorSource.addFeature(feature);
+      }
+    });
+
+    const vectorLayer = new VectorLayer({
+      source: vectorSource,
+    });
+
+    this.map = new Map({
+      target: this.mapContainer.nativeElement,
+      layers: [osmLayer, googleLayer, vectorLayer],
+      view: new View({
+        center: fromLonLat([28.9784, 41.0082]),
+        zoom: 6,
+      }),
+    });
+
+    this.overlay = new Overlay({
+      element: this.popupElement.nativeElement,
+      positioning: 'bottom-center',
+      stopEvent: false,
+      offset: [0, -15],
+    });
+    this.map.addOverlay(this.overlay);
+
+    const switchContainer = document.createElement('div');
+    switchContainer.style.position = 'absolute';
+    switchContainer.style.bottom = '10px';
+    switchContainer.style.right = '10px';
+    switchContainer.style.background = 'rgba(255, 255, 255, 0.8)';
+    switchContainer.style.padding = '10px';
+    switchContainer.style.borderRadius = '5px';
+    switchContainer.style.boxShadow = '0px 0px 5px rgba(0, 0, 0, 0.3)';
+
+    const osmButton = document.createElement('button');
+    osmButton.textContent = 'OpenStreetMap';
+    osmButton.style.marginRight = '5px';
+    osmButton.style.padding = '5px 10px';
+    osmButton.style.border = 'none';
+    osmButton.style.borderRadius = '3px';
+    osmButton.style.background = '#198754';
+    osmButton.style.color = 'white';
+
+    const googleButton = document.createElement('button');
+    googleButton.textContent = 'Google Maps';
+    googleButton.style.padding = '5px 10px';
+    googleButton.style.border = 'none';
+    googleButton.style.borderRadius = '3px';
+    googleButton.style.background = '#6c757d';
+    googleButton.style.color = 'white';
+
+    osmButton.addEventListener('click', () => {
+      osmLayer.setVisible(true);
+      googleLayer.setVisible(false);
+      osmButton.style.background = '#198754';
+      osmButton.style.color = 'white';
+      googleButton.style.background = '#6c757d';
+      googleButton.style.color = 'white';
+    });
+
+    googleButton.addEventListener('click', () => {
+      googleLayer.setVisible(true);
+      osmLayer.setVisible(false);
+      googleButton.style.background = '#198754';
+      googleButton.style.color = 'white';
+      osmButton.style.background = '#6c757d';
+      osmButton.style.color = 'white';
+    });
+
+    switchContainer.appendChild(osmButton);
+    switchContainer.appendChild(googleButton);
+    this.map.getTargetElement().appendChild(switchContainer);
+
+    // Sol alt köşeye opaklık ayarları ekleme
+    const opacityContainer = document.createElement('div');
+    opacityContainer.style.position = 'absolute';
+    opacityContainer.style.bottom = '10px';
+    opacityContainer.style.left = '10px';
+    opacityContainer.style.background = 'rgba(255, 255, 255, 0.8)';
+    opacityContainer.style.padding = '10px';
+    opacityContainer.style.borderRadius = '5px';
+    opacityContainer.style.boxShadow = '0px 0px 5px rgba(0, 0, 0, 0.3)';
+    opacityContainer.style.zIndex = '1000';
+    opacityContainer.style.width = '200px';
+    opacityContainer.style.fontSize = '14px';
+    opacityContainer.style.display = 'flex';
+    opacityContainer.style.flexDirection = 'column';
+
+    // OpenStreetMap opaklık ayarı
+    const osmOpacityLabel = document.createElement('label');
+    osmOpacityLabel.textContent = 'OSM Opaklık:';
+    osmOpacityLabel.style.display = 'block';
+    osmOpacityLabel.style.marginBottom = '5px';
+    osmOpacityLabel.style.fontWeight = 'bold';
+
+    const osmOpacityInput = document.createElement('input');
+    osmOpacityInput.type = 'range';
+    osmOpacityInput.min = '0.5';
+    osmOpacityInput.max = '1';
+    osmOpacityInput.step = '0.1';
+    osmOpacityInput.value = '1';
+    osmOpacityInput.style.marginBottom = '10px';
+    osmOpacityInput.addEventListener('input', () => {
+      osmLayer.setOpacity(parseFloat(osmOpacityInput.value));
+    });
+
+    // Google Maps opaklık ayarı
+    const googleOpacityLabel = document.createElement('label');
+    googleOpacityLabel.textContent = 'Google Maps Opaklık:';
+    googleOpacityLabel.style.display = 'block';
+    googleOpacityLabel.style.marginBottom = '5px';
+    googleOpacityLabel.style.fontWeight = 'bold';
+
+    const googleOpacityInput = document.createElement('input');
+    googleOpacityInput.type = 'range';
+    googleOpacityInput.min = '0.5';
+    googleOpacityInput.max = '1';
+    googleOpacityInput.step = '0.1';
+    googleOpacityInput.value = '1';
+    googleOpacityInput.addEventListener('input', () => {
+      googleLayer.setOpacity(parseFloat(googleOpacityInput.value));
+    });
+
+    opacityContainer.appendChild(osmOpacityLabel);
+    opacityContainer.appendChild(osmOpacityInput);
+    opacityContainer.appendChild(googleOpacityLabel);
+    opacityContainer.appendChild(googleOpacityInput);
+
+    this.map.getTargetElement().appendChild(opacityContainer);
+
+    this.map.on('pointermove', (event) => {
+      const feature = this.map.forEachFeatureAtPixel(event.pixel, (feat) => feat);
+      if (feature) {
+        const coordinates = (feature.getGeometry() as Point).getCoordinates();
+        const propertyData = feature.get('data');
+        this.overlay.setPosition(coordinates);
+
+        // Popup içeriği
+        this.popupElement.nativeElement.innerHTML = `
+          <strong>${propertyData.tasinmazNitelik}</strong><br>
+          ${propertyData.mahalle.ilce.il.ilAdi}, ${propertyData.mahalle.ilce.ilceAdi}<br>
+          Ada: ${propertyData.ada}, Parsel: ${propertyData.tasinmazParsel}
+        `;
+        this.popupElement.nativeElement.style.display = 'block';
+      } else {
+        this.popupElement.nativeElement.style.display = 'none';
+      }
+    });
+  }
+
   searchProperties(): void {
     if (!this.searchQuery) {
       this.filteredProperties = this.properties.slice();
     } else {
-      this.filteredProperties = this.properties.filter(property =>
-        property.mahalle.ilce.il.ilAdi.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-        property.mahalle.ilce.ilceAdi.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-        property.mahalle.mahalleAdi.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-        property.tasinmazParsel.toString().includes(this.searchQuery) ||
-        property.ada.toString().includes(this.searchQuery) ||
-        property.tasinmazNitelik.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-        property.tasinmazAdres.toLowerCase().includes(this.searchQuery.toLowerCase())
-      );
+      const searchQuery = this.searchQuery.toLocaleLowerCase('tr-TR'); // Arama metni Türkçe olarak küçültüldü
+  
+      this.filteredProperties = this.properties.filter(property => {
+        const ilAdi = (property.mahalle && property.mahalle.ilce && property.mahalle.ilce.il && property.mahalle.ilce.il.ilAdi)
+          ? property.mahalle.ilce.il.ilAdi.toLocaleLowerCase('tr-TR') // Türkçe küçük harfe dönüştürüldü
+          : '';
+  
+        const ilceAdi = (property.mahalle && property.mahalle.ilce && property.mahalle.ilce.ilceAdi)
+          ? property.mahalle.ilce.ilceAdi.toLocaleLowerCase('tr-TR')
+          : '';
+  
+        const mahalleAdi = (property.mahalle && property.mahalle.mahalleAdi)
+          ? property.mahalle.mahalleAdi.toLocaleLowerCase('tr-TR')
+          : '';
+  
+        const tasinmazParsel = property.tasinmazParsel
+          ? property.tasinmazParsel.toString()
+          : '';
+  
+        const ada = property.ada
+          ? property.ada.toString()
+          : '';
+  
+        const tasinmazNitelik = property.tasinmazNitelik
+          ? property.tasinmazNitelik.toLocaleLowerCase('tr-TR')
+          : '';
+  
+        const tasinmazAdres = property.tasinmazAdres
+          ? property.tasinmazAdres.toLocaleLowerCase('tr-TR')
+          : '';
+  
+        return (
+          ilAdi.includes(searchQuery) ||
+          ilceAdi.includes(searchQuery) ||
+          mahalleAdi.includes(searchQuery) ||
+          tasinmazParsel.includes(searchQuery) ||
+          ada.includes(searchQuery) ||
+          tasinmazNitelik.includes(searchQuery) ||
+          tasinmazAdres.includes(searchQuery)
+        );
+      });
     }
     this.currentPage = 1;
     this.updatePagedProperties();
   }
-
   updatePagedProperties(): void {
     const startIndex = (this.currentPage - 1) * this.itemsPerPage;
     const endIndex = startIndex + this.itemsPerPage;
@@ -159,15 +393,15 @@ export class AnaMenuComponent implements OnInit {
 
   deleteSelectedProperties(): void {
     const selectedProperties = this.properties.filter(property => property.selected);
-  
+
     if (selectedProperties.length === 0) {
       this.showAlert('Lütfen silmek için en az bir taşınmaz seçin.', 'alert-danger');
       return;
     }
-  
+
     this.openDeleteModal();
   }
-  
+
   exportToExcel(): void {
     const dataToExport = (this.searchQuery ? this.filteredProperties : this.properties).map(property => ({
       Taşınmaz_ID: property.id,
@@ -229,9 +463,8 @@ export class AnaMenuComponent implements OnInit {
         this.properties = this.properties.filter(property => !property.selected);
         this.filteredProperties = this.properties.slice();
         this.updatePagedProperties();
+        this.initializeMap();
         this.showAlert('Seçili veriler başarıyla silindi!', 'alert-success');
-
-        // Log kaydı
         const log = {
           UserId: this.userId ? Number(this.userId) : 0,
           UserMail: this.userMail,

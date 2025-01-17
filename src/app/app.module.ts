@@ -17,6 +17,7 @@ import { NgxPaginationModule } from 'ngx-pagination';
 import { AuthGuard } from './login/auth.guard';
 import { RoleGuard } from './login/role.guard';
 import { LogComponent } from './log/log.component';
+import { MapComponent } from './map/map.component';
 
 @NgModule({
   declarations: [
@@ -28,7 +29,8 @@ import { LogComponent } from './log/log.component';
     UsersComponent,
     AddUserComponent,
     EditUserComponent,
-    LogComponent
+    LogComponent,
+    MapComponent
     ],
   imports: [
     BrowserModule,

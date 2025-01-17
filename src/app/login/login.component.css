@@ -3,27 +3,29 @@
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background-color: #303030;
+  background-color: #303030; /* Dark background for the page */
+  background-image: linear-gradient(to top, #303030, #434343); /* Gradient background */
 }
 
 .login-box {
   width: 100%;
   max-width: 400px;
-  padding: 30px;
+  padding: 40px;
   background: #ffffff;
-  border-radius: 20px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 15px; /* Softer corners */
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1); /* Softer shadow */
   text-align: center;
 }
 
 h2 {
-  margin-bottom: 20px;
-  font-size: 24px;
+  margin-bottom: 25px;
+  font-size: 26px;
   color: #333;
+  font-weight: 600;
 }
 
 .form-group {
-  margin-bottom: 15px;
+  margin-bottom: 20px;
   text-align: left;
 }
 
@@ -34,23 +36,24 @@ label {
 
 input {
   width: 100%;
-  padding: 10px;
-  margin-top: 5px;
+  padding: 12px;
+  margin-top: 8px;
   border: 1px solid #ddd;
-  border-radius: 4px;
+  border-radius: 5px;
   font-size: 14px;
 }
 
 button {
   width: 100%;
-  padding: 10px;
+  padding: 12px;
   font-size: 16px;
   font-weight: bold;
   color: #fff;
   background-color: #007bff;
   border: none;
-  border-radius: 4px;
+  border-radius: 5px;
   cursor: pointer;
+  transition: background-color 0.3s ease-in-out;
 }
 
 button:disabled {
@@ -61,7 +64,18 @@ button:disabled {
 button:hover:not(:disabled) {
   background-color: #0056b3;
 }
+
 .alert {
-  margin-top: 10px;
+  margin-top: 20px;
+  padding: 10px;
   transition: all 0.3s ease-in-out;
+}
+
+input:focus {
+  border-color: #007bff; /* Highlight input borders on focus */
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Add a subtle focus glow */
+}
+
+input.error {
+  border-color: #dc3545; /* Red border for error inputs */
 }

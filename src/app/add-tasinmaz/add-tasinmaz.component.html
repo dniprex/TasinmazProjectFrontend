@@ -1,75 +1,119 @@
-<html>
 <div class="container mt-5">
   <h2>Yeni Taşınmaz Ekle</h2>
-  <form>
+  <form (ngSubmit)="onSubmit()">
+
+    <!-- Harita -->
+    <div class="position-relative">
+      <div id="map" class="map-container"></div>
+      <!-- Katman Seçim Butonları -->
+      <div class="layer-switcher position-absolute bottom-0 end-0 p-3">
+        <button
+          id="osm-layer-button"
+          type="button"
+          class="btn"
+          (click)="toggleOSMLayer()"
+          style="background: #198754; color: white; margin-right: 5px;"
+        >
+          OpenStreetMap
+        </button>
+        <button
+          id="google-layer-button"
+          type="button"
+          class="btn"
+          (click)="toggleGoogleLayer()"
+          style="background: #6c757d; color: white;"
+        >
+          Google Maps
+        </button>
+      </div>
+    </div>
     <div *ngIf="alertMessage" [ngClass]="alertClass" class="alert mt-3" role="alert">
       {{ alertMessage }}
     </div>
-    <div class="mb-3">
-      <label for="il" class="form-label">İl</label>
-      <select class="form-control" id="il" [(ngModel)]="selectedIl" name="il" (change)="onIlChange()">
-        <option value="">İl seçiniz</option>
-        <option *ngFor="let il of iller" [value]="il.id">{{ il.ilAdi }}</option>
-      </select>
-    </div>
-    
-    <div class="mb-3">
-      <label for="ilce" class="form-label">İlçe</label>
-      <select class="form-control" id="ilce" [(ngModel)]="selectedIlce" name="ilce" (change)="onIlceChange()" [disabled]="!selectedIl">
-        <option value="">İlçe seçiniz</option>
-        <option *ngFor="let ilce of ilceler" [value]="ilce.id">{{ ilce.ilceAdi }}</option>
-      </select>
-    </div>
-    
-    <div class="mb-3">
-      <label for="mahalle" class="form-label">Mahalle</label>
-      <select class="form-control" id="mahalle" [(ngModel)]="selectedMahalle" name="mahalle" [disabled]="!selectedIlce">
-        <option value="">Mahalle seçiniz</option>
-        <option *ngFor="let mahalle of mahalleler" [value]="mahalle.id">{{ mahalle.mahalleAdi }}</option>
-      </select>
-    </div>
-    
-    <div class="mb-3">
-      <label for="tasinmazIsim" class="form-label">Taşınmaz İsim</label>
-      <input type="text" class="form-control" id="tasinmazIsim" [(ngModel)]="tasinmazIsim" name="tasinmazIsim"
-        placeholder="Taşınmaz ismi giriniz" required />
+
+    <!-- Form Alanları -->
+    <div class="row mt-3">
+      <div class="col-md-4 mb-3">
+        <label for="il" class="form-label">İl</label>
+        <select class="form-control" id="il" name="il" [(ngModel)]="selectedIl" (change)="onIlChange()">
+          <option value="">İl seçiniz</option>
+          <option *ngFor="let il of iller" [value]="il.id">{{ il.ilAdi }}</option>
+        </select>
+      </div>
+      <div class="col-md-4 mb-3">
+        <label for="ilce" class="form-label">İlçe</label>
+        <select
+          class="form-control"
+          id="ilce"
+          name="ilce"
+          [(ngModel)]="selectedIlce"
+          (change)="onIlceChange()"
+          [disabled]="!selectedIl"
+        >
+          <option value="">İlçe seçiniz</option>
+          <option *ngFor="let ilce of ilceler" [value]="ilce.id">{{ ilce.ilceAdi }}</option>
+        </select>
+      </div>
+      <div class="col-md-4 mb-3">
+        <label for="mahalle" class="form-label">Mahalle</label>
+        <select
+          class="form-control"
+          id="mahalle"
+          name="mahalle"
+          [(ngModel)]="selectedMahalle"
+          [disabled]="!selectedIlce"
+        >
+          <option value="">Mahalle seçiniz</option>
+          <option *ngFor="let mahalle of mahalleler" [value]="mahalle.id">{{ mahalle.mahalleAdi }}</option>
+        </select>
+      </div>
+
+      <div class="col-md-4 mb-3">
+        <label for="tasinmazIsim" class="form-label">Taşınmaz İsim</label>
+        <input
+          type="text"
+          class="form-control"
+          id="tasinmazIsim"
+          name="tasinmazIsim"
+          [(ngModel)]="tasinmazIsim"
+          placeholder="Taşınmaz ismi giriniz"
+          required
+        />
+      </div>
+      <div class="col-md-4 mb-3">
+        <label for="ada" class="form-label">Ada</label>
+        <input type="text" class="form-control" id="ada" name="ada" [(ngModel)]="ada" placeholder="Ada giriniz" />
+      </div>
+      <div class="col-md-4 mb-3">
+        <label for="parsel" class="form-label">Parsel</label>
+        <input
+          type="text"
+          class="form-control"
+          id="parsel"
+          name="parsel"
+          [(ngModel)]="parsel"
+          placeholder="Parsel giriniz"
+        />
+      </div>
+      <!-- Üçüncü Sıra -->
+      <div class="col-md-4 mb-3">
+        <label for="nitelik" class="form-label">Nitelik</label>
+        <input type="text" class="form-control" id="nitelik" name="nitelik" [(ngModel)]="nitelik" placeholder="Nitelik giriniz" required />
+      </div>
+      <div class="col-md-4 mb-3">
+        <label for="adres" class="form-label">Adres</label>
+        <input type="text" class="form-control" id="adres" name="adres" [(ngModel)]="adres" placeholder="Adres giriniz" required />
+      </div>
+      <div class="col-md-4 mb-3">
+        <label for="koordinat" class="form-label">Koordinat</label>
+        <input type="text" class="form-control" id="koordinat" name="koordinat" [(ngModel)]="koordinat" readonly />
+      </div>
     </div>
 
-    <div class="mb-3">
-      <label for="ada" class="form-label">Ada</label>
-      <input type="text" class="form-control" id="ada" [(ngModel)]="ada" name="ada" placeholder="Ada giriniz"
-        required />
+    <!-- Butonlar -->
+    <div class="text-center mt-3">
+      <button type="submit" class="btn btn-success me-2">Kaydet</button>
+      <button type="button" class="btn btn-secondary" (click)="cancel()">İptal</button>
     </div>
-
-    <div class="mb-3">
-      <label for="parsel" class="form-label">Parsel</label>
-      <input type="text" class="form-control" id="parsel" [(ngModel)]="parsel" name="parsel"
-        placeholder="Parsel giriniz" required />
-    </div>
-
-    <div class="mb-3">
-      <label for="nitelik" class="form-label">Nitelik</label>
-      <input type="text" class="form-control" id="nitelik" [(ngModel)]="nitelik" name="nitelik"
-        placeholder="Nitelik giriniz" required />
-    </div>
-
-    <div class="mb-3">
-      <label for="adres" class="form-label">Adres</label>
-      <input type="text" class="form-control" id="adres" [(ngModel)]="adres" name="adres" placeholder="Adres giriniz"
-        required />
-    </div>
-    <div class="mb-3">
-      <label for="koordinat" class="form-label">Koordinat</label>
-      <input type="text" class="form-control" id="koordinat" [(ngModel)]="koordinat" name="koordinat" placeholder="Koordinat giriniz"
-        required />
-    </div>
-    <form (ngSubmit)="onSubmit()">
-      <button type="submit" class="btn btn-success">Kaydet</button>
-      <button type="button" class="btn btn-secondary" (click)="cancel()">
-        İptal
-      </button>
-    </form>
   </form>
 </div>
-
-</html>

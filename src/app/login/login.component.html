@@ -1,4 +1,3 @@
-
 <div class="login-container">
   <div class="login-box">
     <div *ngIf="alertMessage" [ngClass]="alertClass" class="alert" role="alert">
@@ -13,11 +12,11 @@
           id="email"
           class="form-control"
           formControlName="email"
+          [ngClass]="{ 'error': loginForm.get('email')?.invalid && loginForm.get('email')?.touched }"
         />
         <div *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched">
           <small *ngIf="loginForm.get('email')?.errors?.required">Email gerekli.</small>
           <small *ngIf="loginForm.get('email')?.errors?.email">Geçerli bir email girin.</small>
-          
         </div>
       </div>
 
@@ -28,6 +27,7 @@
           id="password"
           class="form-control"
           formControlName="password"
+          [ngClass]="{ 'error': loginForm.get('password')?.invalid && loginForm.get('password')?.touched }"
         />
         <div *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
           <small *ngIf="loginForm.get('password')?.errors?.required">Parola gerekli.</small>

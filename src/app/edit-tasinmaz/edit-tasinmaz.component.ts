@@ -80,17 +80,47 @@ export class EditTasinmazComponent implements OnInit {
 
 
   onIlChange(): void {
-    const selectedIlId = this.selectedIl;
-    this.ilceler = this.ilceler.filter(ilce => ilce.ilId.toString() === selectedIlId);
-    this.selectedIlce = '';
-    this.selectedMahalle = '';
+    if (!this.selectedIl) {
+      this.ilceler = [];
+      this.mahalleler = [];
+      this.selectedIlce = '';
+      this.selectedMahalle = '';
+      return;
+    }
+
+    this.propertyService.getIlceler(this.selectedIl).subscribe(
+      (data) => {
+        this.ilceler = data;
+        console.log('İlçeler başarıyla yüklendi:', this.ilceler);
+        this.mahalleler = [];
+        this.selectedIlce = '';
+        this.selectedMahalle = '';
+      },
+      (error) => {
+        console.error('İlçe verileri yüklenirken hata oluştu:', error);
+        this.showAlert('İlçe verileri yüklenemedi. Lütfen tekrar deneyin.', 'alert-danger');
+      }
+    );
   }
 
 
   onIlceChange(): void {
-    const selectedIlceId = this.selectedIlce;
-    this.mahalleler = this.mahalleler.filter(mahalle => mahalle.ilceId.toString() === selectedIlceId);
-    this.selectedMahalle = '';
+    if (!this.selectedIlce) {
+      this.mahalleler = [];
+      this.selectedMahalle = '';
+      return;
+    }
+
+    this.propertyService.getMahalleler(this.selectedIlce).subscribe(
+      (data) => {
+        this.mahalleler = data;
+        console.log('Mahalleler başarıyla yüklendi:', this.mahalleler);
+      },
+      (error) => {
+        console.error('Mahalle verileri yüklenirken hata oluştu:', error);
+        this.showAlert('Mahalle verileri yüklenemedi. Lütfen tekrar deneyin.', 'alert-danger');
+      }
+    );
   }
 
 
@@ -201,7 +231,7 @@ export class EditTasinmazComponent implements OnInit {
         };
         this.logService.addLog(log).subscribe();
         console.error('Güncelleme sırasında hata oluştu:', error);
-        this.showAlert(`Hata: ${error.message || 'Bilinmeyen bir hata oluştu.'}`, 'alert-danger');
+        this.showAlert(`Hata oluştu. Lütfen değerleri doğru girin.`, 'alert-danger');
       }
     );
 

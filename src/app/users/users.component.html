@@ -7,10 +7,82 @@
   <title>Kullanıcı İşlemleri</title>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+  <style>
+    .table-responsive {
+      margin-top: 0; 
+      padding-top: 0;
+    }
+
+    .table-striped tbody tr:nth-of-type(even) {
+      background-color: #f8f9fa; /* Açık gri */
+    }
+    
+    .table-striped tbody tr:nth-of-type(odd) {
+      background-color: white; /* Beyaz */
+    }
+    
+    .table-striped td {
+      color: #212529; /* Siyah yazı rengi */
+    }
+
+    .pagination .page-item .page-link {
+      background-color: #f0f0f0; /* Açık gri renk */
+      color: #000; /* Siyah yazı */
+      border: 1px solid #ccc; /* Gri kenarlık */
+    }
+
+    .pagination .page-item.active .page-link {
+      background-color: #d9d9d9; /* Daha koyu gri renk */
+      border-color: #bbb; /* Daha koyu kenarlık */
+      color: #000; /* Siyah yazı */
+    }
+
+    .pagination .page-item.disabled .page-link {
+      background-color: #e9ecef; /* Pasifler için gri */
+      color: #6c757d; /* Daha açık gri yazı */
+    }
+
+    .action-buttons button {
+      background-color: white;
+      color: black;
+      border: 1px solid #ccc;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .action-buttons button:hover {
+      background-color: #f8f8f8;
+      color: #000;
+      border-color: #bbb;
+    }
+
+    .action-buttons svg {
+      fill: black;
+      width: 16px;
+      height: 16px;
+    }
+
+    .logout-button {
+      background-color: white;
+      color: black;
+      border: 1px solid #ccc;
+      padding: 5px 10px;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .logout-button:hover {
+      background-color: #f8f8f8;
+      color: #000;
+      border-color: #bbb;
+    }
+  </style>
 </head>
 
 <body>
-  <!-- Navbar -->
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
     <div class="container-fluid">
       <a class="navbar-brand">Kullanıcı İşlemleri</a>
@@ -43,18 +115,14 @@
         <div *ngIf="alertMessage" [ngClass]="alertClass" class="alert mt-3" role="alert">
           {{ alertMessage }}
         </div>
-        <!-- Başlık, searchbox ve butonları hizalama -->
         <div class="d-flex align-items-center justify-content-between mb-3">
-          <!-- Başlık -->
           <h3 class="mb-0">Kullanıcılar</h3>
 
-          <!-- Arama kutusu -->
           <div class="d-flex justify-content-center flex-grow-1 mx-3">
             <input type="text" class="form-control w-50" style="min-width: 200px;" placeholder="Kullanıcı Ara..."
               [(ngModel)]="searchQuery" (input)="searchUsers()" />
           </div>
 
-          <!-- Butonlar -->
           <div class="action-buttons d-flex align-items-center gap-2">
             <button class="btn btn-light" (click)="navigateToAddUser()" type="button">
               <i class="fas fa-plus"></i> Yeni Kullanıcı Ekle
@@ -67,27 +135,7 @@
             </button>
           </div>
         </div>
-        <!-- Silme Onay Modali -->
-        <div class="modal fade" id="deleteConfirmationModal" tabindex="-1"
-          aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true">
-          <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h5 class="modal-title" id="deleteConfirmationModalLabel">Onay</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
-              </div>
-              <div class="modal-body">
-                Seçili kullanıcıları silmek istediğinizden emin misiniz?
-              </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" (click)="closeDeleteModal()">Vazgeç</button>
-                <button type="button" class="btn btn-danger" (click)="confirmDelete()">Sil</button>
-              </div>
-            </div>
-          </div>
-        </div>
 
-        <!-- Kullanıcılar Tablosu -->
         <div class="table-responsive">
           <table class="table table-bordered table-striped align-middle">
             <thead class="table-dark text-center">
@@ -111,7 +159,6 @@
           </table>
         </div>
 
-        <!-- Sayfalama Kontrolleri -->
         <nav class="d-flex justify-content-center">
           <ul class="pagination">
             <li class="page-item" [class.disabled]="currentPage === 1">
@@ -125,13 +172,9 @@
             </li>
           </ul>
         </nav>
-
       </div>
     </div>
   </div>
-
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
 </body>
 
 </html>

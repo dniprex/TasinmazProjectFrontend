@@ -10,14 +10,14 @@ import * as bootstrap from 'bootstrap';
 })
 export class UsersComponent implements OnInit {
   private deleteModal: bootstrap.Modal | null = null;
-  users: any[] = []; // Tüm kullanıcılar
-  filteredUsers: any[] = []; // Filtrelenmiş kullanıcılar
-  pagedUsers: any[] = []; // Sayfa başına kullanıcılar
-  searchQuery: string = ''; // Arama sorgusu
-  currentPage: number = 1; // Mevcut sayfa
-  itemsPerPage: number = 10; // Sayfa başına gösterilecek kullanıcı sayısı
-  alertMessage: string | null = null; // Uyarı mesajı
-  alertClass: string = 'alert-light'; // Uyarı mesajının CSS sınıfı
+  users: any[] = []; 
+  filteredUsers: any[] = []; 
+  pagedUsers: any[] = []; 
+  searchQuery: string = ''; 
+  currentPage: number = 1; 
+  itemsPerPage: number = 10; 
+  alertMessage: string | null = null;
+  alertClass: string = 'alert-light';
 
   constructor(private userService: UserService, private router: Router, private authService: AuthService) { }
 
@@ -27,7 +27,7 @@ export class UsersComponent implements OnInit {
         console.log('API Verisi:', data);
         this.users = data;
         this.filteredUsers = this.users.slice();
-        this.updatePagedUsers(); // Başlangıçta sayfa verilerini güncelle
+        this.updatePagedUsers(); 
       },
       (error) => {
         console.error('Error fetching users:', error);
@@ -60,7 +60,7 @@ export class UsersComponent implements OnInit {
           user.adres.toLowerCase().includes(this.searchQuery.toLowerCase());
       });
     }
-    this.currentPage = 1; // Yeni bir arama yapıldığında ilk sayfaya dön
+    this.currentPage = 1;
     this.updatePagedUsers();
   }
   confirmDelete(): void {
