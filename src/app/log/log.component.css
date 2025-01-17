@@ -14,3 +14,9 @@
 .table-striped td {
     color: #000000; /* Siyah yazı */
 }
+.page-item.active .page-link {
+  background-color: #198754 !important; /* Yeşil arka plan */
+  color: #ffffff !important; /* Beyaz yazı */
+  border-color: #198754 !important; /* Yeşil kenarlık */
+}
+

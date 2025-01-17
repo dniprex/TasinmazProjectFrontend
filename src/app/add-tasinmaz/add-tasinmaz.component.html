@@ -7,22 +7,12 @@
       <div id="map" class="map-container"></div>
       <!-- Katman Seçim Butonları -->
       <div class="layer-switcher position-absolute bottom-0 end-0 p-3">
-        <button
-          id="osm-layer-button"
-          type="button"
-          class="btn"
-          (click)="toggleOSMLayer()"
-          style="background: #198754; color: white; margin-right: 5px;"
-        >
+        <button id="osm-layer-button" type="button" class="btn" (click)="toggleOSMLayer()"
+          style="background: #198754; color: white; margin-right: 5px;">
           OpenStreetMap
         </button>
-        <button
-          id="google-layer-button"
-          type="button"
-          class="btn"
-          (click)="toggleGoogleLayer()"
-          style="background: #6c757d; color: white;"
-        >
+        <button id="google-layer-button" type="button" class="btn" (click)="toggleGoogleLayer()"
+          style="background: #6c757d; color: white;">
           Google Maps
         </button>
       </div>
@@ -42,27 +32,16 @@
       </div>
       <div class="col-md-4 mb-3">
         <label for="ilce" class="form-label">İlçe</label>
-        <select
-          class="form-control"
-          id="ilce"
-          name="ilce"
-          [(ngModel)]="selectedIlce"
-          (change)="onIlceChange()"
-          [disabled]="!selectedIl"
-        >
+        <select class="form-control" id="ilce" name="ilce" [(ngModel)]="selectedIlce" (change)="onIlceChange()"
+          [disabled]="!selectedIl">
           <option value="">İlçe seçiniz</option>
           <option *ngFor="let ilce of ilceler" [value]="ilce.id">{{ ilce.ilceAdi }}</option>
         </select>
       </div>
       <div class="col-md-4 mb-3">
         <label for="mahalle" class="form-label">Mahalle</label>
-        <select
-          class="form-control"
-          id="mahalle"
-          name="mahalle"
-          [(ngModel)]="selectedMahalle"
-          [disabled]="!selectedIlce"
-        >
+        <select class="form-control" id="mahalle" name="mahalle" [(ngModel)]="selectedMahalle"
+          [disabled]="!selectedIlce">
           <option value="">Mahalle seçiniz</option>
           <option *ngFor="let mahalle of mahalleler" [value]="mahalle.id">{{ mahalle.mahalleAdi }}</option>
         </select>
@@ -70,39 +49,29 @@
 
       <div class="col-md-4 mb-3">
         <label for="tasinmazIsim" class="form-label">Taşınmaz İsim</label>
-        <input
-          type="text"
-          class="form-control"
-          id="tasinmazIsim"
-          name="tasinmazIsim"
-          [(ngModel)]="tasinmazIsim"
-          placeholder="Taşınmaz ismi giriniz"
-          required
-        />
+        <input type="text" class="form-control" id="tasinmazIsim" name="tasinmazIsim" [(ngModel)]="tasinmazIsim"
+          placeholder="Taşınmaz ismi giriniz" required />
       </div>
       <div class="col-md-4 mb-3">
         <label for="ada" class="form-label">Ada</label>
-        <input type="text" class="form-control" id="ada" name="ada" [(ngModel)]="ada" placeholder="Ada giriniz" />
+        <input type="text" class="form-control" id="ada" name="ada" [(ngModel)]="ada" placeholder="Ada giriniz"
+          required />
       </div>
       <div class="col-md-4 mb-3">
         <label for="parsel" class="form-label">Parsel</label>
-        <input
-          type="text"
-          class="form-control"
-          id="parsel"
-          name="parsel"
-          [(ngModel)]="parsel"
-          placeholder="Parsel giriniz"
-        />
+        <input type="text" class="form-control" id="parsel" name="parsel" [(ngModel)]="parsel"
+          placeholder="Parsel giriniz" required />
       </div>
       <!-- Üçüncü Sıra -->
       <div class="col-md-4 mb-3">
         <label for="nitelik" class="form-label">Nitelik</label>
-        <input type="text" class="form-control" id="nitelik" name="nitelik" [(ngModel)]="nitelik" placeholder="Nitelik giriniz" required />
+        <input type="text" class="form-control" id="nitelik" name="nitelik" [(ngModel)]="nitelik"
+          placeholder="Nitelik giriniz" required />
       </div>
       <div class="col-md-4 mb-3">
         <label for="adres" class="form-label">Adres</label>
-        <input type="text" class="form-control" id="adres" name="adres" [(ngModel)]="adres" placeholder="Adres giriniz" required />
+        <input type="text" class="form-control" id="adres" name="adres" [(ngModel)]="adres" placeholder="Adres giriniz"
+          required />
       </div>
       <div class="col-md-4 mb-3">
         <label for="koordinat" class="form-label">Koordinat</label>

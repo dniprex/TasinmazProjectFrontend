@@ -322,6 +322,10 @@ export class AddTasinmazComponent implements OnInit {
       console.warn('Eksik bilgiler nedeniyle işlem yapılmadı.');
       return;
     }
+    if (isNaN(Number(this.ada)) || this.ada.trim() === '') {
+      this.showAlert('Ada alanı yalnızca sayısal değer olmalıdır.', 'alert-danger');
+      return; // Form gönderimini durdur
+    }
 
     const newProperty = {
       UserId: Number(this.userId),

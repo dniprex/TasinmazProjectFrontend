@@ -188,6 +188,25 @@ export class EditTasinmazComponent implements OnInit {
       return;
     }
 
+    if (
+      !this.selectedIl ||
+      !this.selectedIlce ||
+      !this.selectedMahalle ||
+      !this.tasinmazIsim ||
+      !this.ada ||
+      !this.parsel ||
+      !this.nitelik ||
+      !this.adres
+    ) {
+      this.showAlert('Lütfen tüm alanları doldurun.', 'alert-danger');
+      return;
+    }
+
+    if (isNaN(Number(this.ada)) || isNaN(Number(this.parsel))) {
+      this.showAlert('Ada ve Parsel alanları yalnızca sayısal değer olmalıdır.', 'alert-danger');
+      return;
+    }
+
     const updatedProperty: Property = {
       id: parseInt(id, 10),
       tasinmazIsim: this.tasinmazIsim || '',
@@ -198,24 +217,20 @@ export class EditTasinmazComponent implements OnInit {
       koordinatBilgisi: this.koordinat || '',
       ilId: parseInt(this.selectedIl, 10),
       ilceId: parseInt(this.selectedIlce, 10),
-      mahalleId: parseInt(this.selectedMahalle, 10)
+      mahalleId: parseInt(this.selectedMahalle, 10),
     };
-
-
-    console.log('Gönderilen veri:', updatedProperty);
 
     this.propertyService.updateProperty(parseInt(id, 10), updatedProperty).subscribe(
       () => {
         this.userId = this.authService.getDecodedTokenUserId();
         this.userMail = this.authService.getDecodedTokenEmail();
-        console.log(this.userId);
-        console.log(this.userMail);
+
         const log = {
           UserId: this.userId ? Number(this.userId) : 0,
           UserMail: this.userMail || 'unknown',
           Durum: 'Başarılı',
           IslemTip: 'Taşınmaz Düzenleme',
-          Aciklama: `Taşınmaz düzenlendi: ${updatedProperty.tasinmazIsim}`
+          Aciklama: `Taşınmaz düzenlendi: ${updatedProperty.tasinmazIsim}`,
         };
         this.logService.addLog(log).subscribe();
         this.showAlert('Değişiklikler başarıyla kaydedildi!', 'alert-success');
@@ -227,16 +242,13 @@ export class EditTasinmazComponent implements OnInit {
           UserMail: this.userMail || 'unknown',
           Durum: 'Başarısız',
           IslemTip: 'Taşınmaz Düzenleme',
-          Aciklama: `Taşınmaz düzenlenemedi: ${updatedProperty.tasinmazIsim}`
+          Aciklama: `Taşınmaz düzenlenemedi: ${updatedProperty.tasinmazIsim}`,
         };
         this.logService.addLog(log).subscribe();
-        console.error('Güncelleme sırasında hata oluştu:', error);
-        this.showAlert(`Hata oluştu. Lütfen değerleri doğru girin.`, 'alert-danger');
+        this.showAlert('Hata oluştu. Lütfen değerleri doğru girin.', 'alert-danger');
       }
     );
-
   }
-
   cancel(): void {
     this.router.navigate(['/ana-menu']);
 

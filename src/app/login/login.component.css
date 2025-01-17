@@ -3,57 +3,58 @@
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background-color: #303030; /* Dark background for the page */
-  background-image: linear-gradient(to top, #303030, #434343); /* Gradient background */
+  background-color: #2c2c2c; /* Daha koyu bir arka plan */
+  background-image: linear-gradient(to bottom, #2c2c2c, #3c3c3c); /* Dikey degrade */
 }
 
 .login-box {
   width: 100%;
-  max-width: 400px;
-  padding: 40px;
+  max-width: 500px; /* Daha geniş kutu */
+  padding: 50px; /* İçerik boşluğu artırıldı */
   background: #ffffff;
-  border-radius: 15px; /* Softer corners */
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1); /* Softer shadow */
+  border-radius: 20px; /* Daha yumuşak köşeler */
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2); /* Daha belirgin gölge */
   text-align: center;
 }
 
 h2 {
-  margin-bottom: 25px;
-  font-size: 26px;
-  color: #333;
-  font-weight: 600;
+  margin-bottom: 30px;
+  font-size: 28px; /* Daha büyük başlık */
+  color: #444;
+  font-weight: 700;
 }
 
 .form-group {
-  margin-bottom: 20px;
+  margin-bottom: 25px; /* Elemanlar arası daha fazla boşluk */
   text-align: left;
 }
 
 label {
-  font-size: 14px;
-  color: #555;
+  font-size: 16px; /* Daha büyük yazı boyutu */
+  color: #666;
 }
 
 input {
   width: 100%;
-  padding: 12px;
-  margin-top: 8px;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  font-size: 14px;
+  padding: 14px; /* Daha büyük tıklama alanı */
+  margin-top: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px; /* Yuvarlatılmış kenarlar */
+  font-size: 16px;
+  transition: all 0.3s ease-in-out; /* Geçiş efekti */
 }
 
 button {
   width: 100%;
-  padding: 12px;
-  font-size: 16px;
+  padding: 14px;
+  font-size: 18px; /* Daha büyük yazı boyutu */
   font-weight: bold;
   color: #fff;
-  background-color: #007bff;
+  background-color: #198754;
   border: none;
-  border-radius: 5px;
+  border-radius: 8px; /* Daha yuvarlak buton */
   cursor: pointer;
-  transition: background-color 0.3s ease-in-out;
+  transition: all 0.3s ease-in-out;
 }
 
 button:disabled {
@@ -62,20 +63,37 @@ button:disabled {
 }
 
 button:hover:not(:disabled) {
-  background-color: #0056b3;
+  background-color: #145f3a; /* Daha koyu bir yeşil */
 }
 
 .alert {
   margin-top: 20px;
-  padding: 10px;
-  transition: all 0.3s ease-in-out;
+  padding: 15px;
+  border-radius: 5px; /* Yuvarlatılmış kenarlar */
+  font-size: 14px;
+  color: #fff;
 }
 
 input:focus {
-  border-color: #007bff; /* Highlight input borders on focus */
-  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Add a subtle focus glow */
+  border-color: #007bff; /* Mavi sınır */
+  box-shadow: 0 0 10px rgba(0, 123, 255, 0.5); /* Daha belirgin glow efekti */
 }
 
 input.error {
-  border-color: #dc3545; /* Red border for error inputs */
+  border-color: #dc3545; /* Hata için kırmızı sınır */
+}
+
+@media (max-width: 768px) {
+  .login-box {
+    padding: 30px; /* Daha küçük ekranlar için içerik boşluğunu azaltın */
+  }
+
+  h2 {
+    font-size: 24px; /* Küçük ekranlarda başlık boyutu küçültüldü */
+  }
+
+  input,
+  button {
+    font-size: 14px; /* Daha küçük yazı boyutu */
+  }
 }

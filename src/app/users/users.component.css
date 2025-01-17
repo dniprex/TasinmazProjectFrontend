@@ -15,29 +15,61 @@
     color: #000000; /* Siyah yazı */
 }
 
+/* Pagination için genel renk ayarları */
+.pagination .page-item .page-link {
+    background-color: #f0f0f0; /* Açık gri renk */
+    color: #198754; /* Yeşil yazı */
+    border: 1px solid #198754; /* Yeşil kenarlık */
+}
 
-  .action-buttons button {
+.pagination .page-item:hover .page-link {
+    background-color: #d4edda; /* Daha açık yeşil */
+    color: #155724; /* Daha koyu yeşil yazı */
+    border-color: #198754; /* Yeşil kenarlık */
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #198754; /* Aktif durumda arka plan (yeşil) */
+    color: #ffffff; /* Aktif durumda yazı (beyaz) */
+    border-color: #198754; /* Aktif durumda kenarlık (yeşil) */
+}
+
+.pagination .page-item.disabled .page-link {
+    background-color: #e9ecef; /* Devre dışı arka plan (gri) */
+    color: #6c757d; /* Devre dışı yazı rengi (açık gri) */
+    border-color: #ddd; /* Devre dışı kenarlık (açık gri) */
+}
+.page-item.active .page-link {
+  background-color: #198754 !important; /* Yeşil arka plan */
+  color: #ffffff !important; /* Beyaz yazı */
+  border-color: #198754 !important; /* Yeşil kenarlık */
+}
+
+
+/* Butonlar için düzenlemeler */
+.action-buttons button {
     background-color: white;
     color: black;
     border: 1px solid #ccc;
     display: flex;
     align-items: center;
     gap: 5px;
-  }
+}
 
-  .action-buttons button:hover {
+.action-buttons button:hover {
     background-color: #f8f8f8;
     color: #000;
     border-color: #bbb;
-  }
+}
 
-  .action-buttons svg {
+.action-buttons svg {
     fill: black;
     width: 16px;
     height: 16px;
-  }
+}
 
-  .logout-button {
+/* Çıkış düğmesi */
+.logout-button {
     background-color: white;
     color: black;
     border: 1px solid #ccc;
@@ -46,10 +78,10 @@
     display: flex;
     align-items: center;
     gap: 5px;
-  }
+}
 
-  .logout-button:hover {
+.logout-button:hover {
     background-color: #f8f8f8;
     color: #000;
     border-color: #bbb;
-  }
+}

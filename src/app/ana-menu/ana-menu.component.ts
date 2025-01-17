@@ -293,37 +293,38 @@ export class AnaMenuComponent implements OnInit {
     if (!this.searchQuery) {
       this.filteredProperties = this.properties.slice();
     } else {
-      const searchQuery = this.searchQuery.toLocaleLowerCase('tr-TR'); // Arama metni Türkçe olarak küçültüldü
-  
+      const searchQuery = this.searchQuery.replace(/I/g, 'ı').replace(/İ/g, 'i').toLowerCase();
+
+
       this.filteredProperties = this.properties.filter(property => {
         const ilAdi = (property.mahalle && property.mahalle.ilce && property.mahalle.ilce.il && property.mahalle.ilce.il.ilAdi)
           ? property.mahalle.ilce.il.ilAdi.toLocaleLowerCase('tr-TR') // Türkçe küçük harfe dönüştürüldü
           : '';
-  
+
         const ilceAdi = (property.mahalle && property.mahalle.ilce && property.mahalle.ilce.ilceAdi)
           ? property.mahalle.ilce.ilceAdi.toLocaleLowerCase('tr-TR')
           : '';
-  
+
         const mahalleAdi = (property.mahalle && property.mahalle.mahalleAdi)
           ? property.mahalle.mahalleAdi.toLocaleLowerCase('tr-TR')
           : '';
-  
+
         const tasinmazParsel = property.tasinmazParsel
           ? property.tasinmazParsel.toString()
           : '';
-  
+
         const ada = property.ada
           ? property.ada.toString()
           : '';
-  
+
         const tasinmazNitelik = property.tasinmazNitelik
           ? property.tasinmazNitelik.toLocaleLowerCase('tr-TR')
           : '';
-  
+
         const tasinmazAdres = property.tasinmazAdres
           ? property.tasinmazAdres.toLocaleLowerCase('tr-TR')
           : '';
-  
+
         return (
           ilAdi.includes(searchQuery) ||
           ilceAdi.includes(searchQuery) ||

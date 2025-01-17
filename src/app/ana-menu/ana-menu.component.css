@@ -72,4 +72,9 @@
   background-color: #198754;
 }
 
-  
+.page-item.active .page-link {
+  z-index: 3;
+  color: #fff; /* Beyaz yazı rengi */
+  background-color: #198754; /* Varsayılan mavi arka plan */
+  border-color: #ffffff; /* Varsayılan mavi kenarlık */
+}
