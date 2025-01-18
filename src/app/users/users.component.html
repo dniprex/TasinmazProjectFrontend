@@ -157,19 +157,17 @@
             <thead class="table-dark text-center">
               <tr>
                 <th></th>
-                <th>Ad Soyad</th>
+                <th>Kullanıcı ID</th>
                 <th>E-posta</th>
                 <th>Rol</th>
-                <th>Adres</th>
               </tr>
             </thead>
             <tbody>
               <tr *ngFor="let user of pagedUsers" class="text-center">
                 <td><input type="checkbox" [(ngModel)]="user.selected"></td>
-                <td>{{ user.name + " " + user.surname }}</td>
+                <td>{{ user.id }}</td>
                 <td>{{ user.email }}</td>
-                <td>{{ user.userRole }}</td>
-                <td>{{ user.adres }}</td>
+                <td>{{ user.role }}</td>
               </tr>
             </tbody>
           </table>

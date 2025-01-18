@@ -246,7 +246,7 @@ export class AddTasinmazComponent implements OnInit {
 
 
   addMarker(coordinate: [number, number]): void {
-    this.markerSource.clear(); // Önceki markerları temizle
+    this.markerSource.clear();
     const marker = new Feature({
       geometry: new Point(coordinate),
     });
@@ -261,10 +261,10 @@ export class AddTasinmazComponent implements OnInit {
     const osmButton = document.getElementById('osm-layer-button') as HTMLElement;
     const googleButton = document.getElementById('google-layer-button') as HTMLElement;
 
-    osmButton.style.background = '#198754'; // OpenStreetMap için yeşil
+    osmButton.style.background = '#198754'; 
     osmButton.style.color = 'white';
 
-    googleButton.style.background = '#6c757d'; // Google Maps için gri
+    googleButton.style.background = '#6c757d';
     googleButton.style.color = 'white';
 
     console.log('OpenStreetMap etkinleştirildi.');
@@ -277,10 +277,10 @@ export class AddTasinmazComponent implements OnInit {
     const osmButton = document.getElementById('osm-layer-button') as HTMLElement;
     const googleButton = document.getElementById('google-layer-button') as HTMLElement;
 
-    googleButton.style.background = '#198754'; // Google Maps için yeşil
+    googleButton.style.background = '#198754'; 
     googleButton.style.color = 'white';
 
-    osmButton.style.background = '#6c757d'; // OpenStreetMap için gri
+    osmButton.style.background = '#6c757d'; 
     osmButton.style.color = 'white';
 
     console.log('Google Maps etkinleştirildi.');
@@ -288,7 +288,6 @@ export class AddTasinmazComponent implements OnInit {
 
 
 
-  // OpenStreetMap opaklık ayarı
   setOSMLayerOpacity(opacity: number): void {
     if (this.osmLayer) {
       this.osmLayer.setOpacity(opacity);
@@ -296,7 +295,6 @@ export class AddTasinmazComponent implements OnInit {
     }
   }
 
-  // Google Maps opaklık ayarı
   setGoogleLayerOpacity(opacity: number): void {
     if (this.googleLayer) {
       this.googleLayer.setOpacity(opacity);

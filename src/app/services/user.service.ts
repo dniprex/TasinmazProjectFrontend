@@ -8,29 +8,25 @@ import { Observable } from 'rxjs';
 export class UserService {
   private apiUrl = 'https://localhost:44330/api';
   constructor(private http: HttpClient) { }
-  getUsers(): Observable<any> {
-    return this.http.get<any>(this.apiUrl + '/Auth/users');
-  }
-
-  getUserById(id: number): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/Auth/${id}`);
-  }
-
-  createUser(user: any): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/Auth/register`, user);
+  getUsers(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/user/users`);
   }
   
-  updateUser(id: number, user: Partial<User>): Observable<any> {
-    return this.http.patch(`${this.apiUrl}/Auth/users/${id}`, user, { responseType: 'text' });
+  getUserById(id: number): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/user/${id}`);
   }
-  updateUsers(id: number, user: any): Observable<any> {
-    return this.http.put<any>(`${this.apiUrl}/Auth/Users/${id}`, user);
+  
+  createUser(user: any): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/user/register`, user);
   }
+  
+  updateUser(id: number, user: any): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/user/${id}`, user);
+  }
+  
   deleteUser(id: number): Observable<any> {
-    return this.http.delete<any>(`${this.apiUrl}/Auth/users/${id}`);
+    return this.http.delete<any>(`${this.apiUrl}/user/${id}`);
   }
-  patchUser(id: number, user: any): Observable<any> {
-    return this.http.patch(`${this.apiUrl}/Auth/users/${id}`, user);
-  }
+  
   
 }

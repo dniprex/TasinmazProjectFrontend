@@ -18,6 +18,7 @@ import { fromLonLat } from 'ol/proj';
 import { Style, Icon } from 'ol/style';
 import Overlay from 'ol/Overlay';
 import XYZ from "ol/source/XYZ";
+import jwt_decode from 'jwt-decode';
 @Component({
   selector: 'app-ana-menu',
   templateUrl: './ana-menu.component.html',
@@ -49,35 +50,52 @@ export class AnaMenuComponent implements OnInit {
 
   ngOnInit(): void {
     this.deleteModal = new bootstrap.Modal(document.getElementById('deleteConfirmationModal') as HTMLElement);
-    this.userRole = this.authService.getDecodedTokenRole();
-    this.userId = this.authService.getDecodedTokenUserId();
-    this.userMail = this.authService.getDecodedTokenEmail();
-
-    console.log("Kullanıcı Rolü:", this.userRole);
-    console.log("Kullanıcı ID:", this.userId);
-    console.log("Kullanıcı Mail:", this.userMail);
-
+  
+    const token = localStorage.getItem('token');
+    if (token) {
+      try {
+        const decodedToken: any = jwt_decode(token); 
+        this.userRole = decodedToken.role || null; 
+        this.userId = decodedToken.nameid || null;
+        this.userMail = decodedToken.email || null;
+  
+        console.log("Kullanıcı Rolü:", this.userRole);
+        console.log("Kullanıcı ID:", this.userId);
+        console.log("Kullanıcı Mail:", this.userMail);
+      } catch (error) {
+        console.error("Token çözümleme hatası:", error);
+        this.userRole = null;
+        this.userId = null;
+        this.userMail = null;
+      }
+    } else {
+      console.warn("Token bulunamadı.");
+      this.userRole = null;
+      this.userId = null;
+      this.userMail = null;
+    }
+  
     this.propertyService.getProperties().subscribe(
       (data) => {
         console.log("API Verisi:", data);
         if (Array.isArray(data) && data.length > 0) {
           if (this.userRole === 'Admin') {
-            this.properties = data;
-            this.filteredProperties = this.properties.slice();
+            this.properties = data; 
           } else if (this.userRole === 'User') {
-
             if (this.userId !== null) {
-
               this.properties = data.filter((property) => String(property.userId) === String(this.userId));
               console.log("Kullanıcıya ait Taşınmazlar:", this.properties);
             } else {
               console.log("Kullanıcı ID'si tanımlanmamış");
               this.properties = [];
             }
-
-            this.filteredProperties = this.properties.slice();
-            console.log("Kullanıcıya ait Filtrelenmiş Taşınmazlar:", this.filteredProperties);
+          } else {
+            console.warn("Bilinmeyen rol.");
+            this.properties = [];
           }
+  
+          this.filteredProperties = this.properties.slice();
+          console.log("Filtrelenmiş Taşınmazlar:", this.filteredProperties);
           this.updatePagedProperties();
           this.initializeMap();
         } else {
@@ -90,8 +108,8 @@ export class AnaMenuComponent implements OnInit {
         console.error('API Hatası:', error);
       }
     );
-
   }
+  
   openDeleteModal(): void {
     if (this.deleteModal) {
       this.deleteModal.show();

@@ -2,127 +2,88 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Router } from '@angular/router';
-import * as jwt_decode from 'jwt-decode';
+import jwt_decode from 'jwt-decode';
 import { LogService } from './log.service';
+
 interface DecodedToken {
-  id: number;
-  role: string;
-  exp: number;
+  nameid: string; // Kullanıcı ID'si
+  role: string;   // Kullanıcı rolü
+  email: string;  // Kullanıcı e-posta adresi
+  exp: number;    // Token son kullanma zamanı
 }
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:44300/api/auth'; 
+  private apiUrl = 'http://localhost:44300/api/auth';
   private roleSubject = new BehaviorSubject<string | null>(null);
 
-  constructor(private http: HttpClient, private router:Router, private logService:LogService) {}
+  constructor(private http: HttpClient, private router: Router, private logService: LogService) {}
 
-  login(credentials: { email: string; password: string }) {
-    return this.http.post<{ token: string }>(`${this.apiUrl}/login`, credentials); 
+  // Kullanıcı giriş metodu
+  login(credentials: { email: string; password: string }): Observable<{ token: string }> {
+    return this.http.post<{ token: string }>(`${this.apiUrl}/login`, credentials);
   }
-  
-  decodeToken(token: string): any {
-    if (!token) {
-      return null;
-    }
-    try {
-      return jwt_decode(token);
-    } catch (error) {
-      console.error('Token çözümleme hatası:', error);
-      return null;
-    }
-  }
+
+  // Kullanıcı kayıt metodu
   register(email: string, password: string): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/register`, { email, password });
   }
 
-  getRole() {
-    return this.roleSubject.asObservable();
+  // Token decode metodu
+  private decodeToken(): DecodedToken | null {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      console.error('Token bulunamadı.');
+      return null;
+    }
+
+    try {
+      const decodedToken = jwt_decode<DecodedToken>(token);
+      return decodedToken;
+    } catch (error) {
+      console.error('Token çözümleme hatası:', error);
+      return null;
+    }
   }
+
   getDecodedTokenRole(): string | null {
-    const token = localStorage.getItem('token');
-  
-    // Token boş mu?
-    if (!token) {
-      console.error('Token bulunamadı.');
-      return null;
+    const decodedToken = this.decodeToken();
+    if (decodedToken && decodedToken.role) {
+      return decodedToken.role;
     }
-  
-    // Token formatı geçerli mi?
-    if (token.split('.').length !== 3) {
-      console.error('Token formatı geçersiz.');
-      return null;
-    }
-  
-    try {
-      const base64Url = token.split('.')[1];
-      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-      const decodedToken: any = JSON.parse(atob(base64));
-  
-      // Eğer bir rol varsa, döndür
-      return decodedToken.role || null;
-    } catch (error) {
-      console.error('Token çözümleme hatası:', error);
-      return null;
-    }
+    return null;
   }
+  
   getDecodedTokenEmail(): string | null {
-    const token = localStorage.getItem('token');
-    
-    if (!token) {
-      console.error('Token bulunamadı.');
-      return null;
+    const decodedToken = this.decodeToken();
+    if (decodedToken && decodedToken.email) {
+      return decodedToken.email;
     }
-  
-    try {
-      const base64Url = token.split('.')[1];
-      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-      const decodedToken: any = JSON.parse(atob(base64));
-      
-      return decodedToken.email || null;
-    } catch (error) {
-      console.error('Token çözümleme hatası:', error);
-      return null;
-    }
+    return null;
   }
   
+
+  // Kullanıcı ID'sini döndürür
   getDecodedTokenUserId(): number | null {
-    const token = localStorage.getItem('token');
-    
-    // Token boş mu?
-    if (!token) {
-      console.error('Token bulunamadı.');
+    const decodedToken = this.decodeToken();
+    if (!decodedToken || !decodedToken.nameid) {
+      console.error('Kullanıcı ID bulunamadı.');
       return null;
     }
-    
-    // Token formatı geçerli mi?
-    if (token.split('.').length !== 3) {
-      console.error('Token formatı geçersiz.');
-      return null;
-    }
-    
-    try {
-      const base64Url = token.split('.')[1];
-      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-      const decodedToken: any = JSON.parse(atob(base64));
-      
-      // Eğer bir userId varsa, döndür
-      return decodedToken.id || null;
-    } catch (error) {
-      console.error('Token çözümleme hatası:', error);
-      return null;
-    }
+
+    return Number(decodedToken.nameid);
   }
-  
-  
+
+  // Kullanıcı çıkış yapar
   logout(): void {
     localStorage.removeItem('token');
     this.roleSubject.next(null);
     this.router.navigate(['/login']);
   }
 
+  // Kullanıcının giriş yapıp yapmadığını kontrol eder
   isAuthenticated(): boolean {
     const token = localStorage.getItem('token');
     return !!token;

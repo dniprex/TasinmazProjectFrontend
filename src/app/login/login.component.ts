@@ -27,73 +27,55 @@ export class LoginComponent {
     });
   }
 
+
   onSubmit() {
     if (this.loginForm.valid) {
       const { email, password } = this.loginForm.value;
-
+  
       this.authService.login({ email, password }).subscribe({
         next: (response: any) => {
           const token = response.token;
-
-          if (!token || token.split('.').length !== 3) {
-            console.error('Sunucudan geçersiz token alındı.');
-            this.showAlert('Geçersiz token alındı!', 'alert-danger');
+  
+          if (!token) {
+            console.error('Token alınamadı.');
+            this.showAlert('Token alınamadı!', 'alert-danger');
             return;
           }
-
-          localStorage.setItem('token', token);
-
+  
           try {
-            const decodedToken = jwt_decode<{ role: string; id: number }>(token);
-            console.log('Rol:', decodedToken.role);
-            console.log('ID:', decodedToken.id);
-
-            // Başarılı giriş logu
-            const log = {
-              userId: decodedToken.id ? Number(decodedToken.id) : 0,
-              userMail: email || 'unknown',
-              durum: 'Başarılı',
-              islemTip: 'Giriş Yapma',
-              aciklama: 'Kullanıcı giriş yaptı.'
-            };
-
-            this.logService.addLog(log).subscribe(
-              (response) => {
-                console.log('Gönderilen veri:', JSON.stringify(log));
-                console.log('Log başarıyla kaydedildi:', response);
-              },
-              (error) => {
-                console.error('Log kaydında hata:', error);
-              }
-            );
-
+            const decodedToken = jwt_decode<{ nameid: string; role: string; email: string }>(token);
+            const userId = decodedToken.nameid; // nameid üzerinden kullanıcı ID'si alınır
+            const userRole = decodedToken.role;
+            const userEmail = decodedToken.email;
+          
+            console.log('Kullanıcı Rolü:', userRole);
+            console.log('Kullanıcı ID:', userId);
+            console.log('Kullanıcı Mail:', userEmail);
           } catch (error) {
             console.error('Token çözümleme hatası:', error);
           }
-
+          
+  
+          localStorage.setItem('token', token);
           this.router.navigate(['/ana-menu']);
           this.showAlert('Giriş başarılı!', 'alert-success');
         },
         error: (err) => {
           console.error('Giriş başarısız:', err);
-
+  
           const log = {
-            userId: 1, 
-            userMail: (this.loginForm.get('email') && this.loginForm.get('email').value) || 'unknown',
+            userId: 1,
+            userMail: email || 'unknown',
             durum: 'Başarısız',
             islemTip: 'Giriş Yapma',
-            aciklama: `Giriş başarısız oldu.`
+            aciklama: 'Giriş başarısız oldu.'
           };
-
-          this.logService.addLog(log).subscribe(
-            () => {
-              console.log('Log kaydedildi: Başarısız giriş.');
-            },
-            (error) => {
-              console.error('Log kaydı sırasında hata oluştu:', error);
-            }
-          );
-
+  
+          this.logService.addLog(log).subscribe({
+            next: () => console.log('Başarısız giriş log kaydedildi.'),
+            error: (logErr) => console.error('Log kaydı sırasında hata oluştu:', logErr),
+          });
+  
           this.showAlert(
             'Giriş başarısız. Lütfen bilgilerinizi kontrol edin.',
             'alert-danger'
@@ -103,7 +85,10 @@ export class LoginComponent {
     } else {
       this.showAlert('Lütfen formu doğru bir şekilde doldurun.', 'alert-danger');
     }
+    
   }
+  
+
 
   showAlert(message: string, cssClass: string) {
     this.alertMessage = message;
