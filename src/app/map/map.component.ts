@@ -25,7 +25,7 @@ export class MapComponent implements OnInit {
       layers: [
         new TileLayer({
           source: new OSM(),
-          visible: true, // İlk katman açık
+          visible: true, 
         }),
         new TileLayer({
           source: new XYZ({
@@ -33,12 +33,12 @@ export class MapComponent implements OnInit {
             maxZoom: 20,
             subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
           }),
-          visible: false, // Google Maps kapalı
+          visible: false, 
         }),
       ],
       view: new View({
-        center: [0, 0], // Başlangıç koordinatları
-        zoom: 2, // Başlangıç yakınlaştırma seviyesi
+        center: [0, 0], 
+        zoom: 2,
       }),
     });
   }

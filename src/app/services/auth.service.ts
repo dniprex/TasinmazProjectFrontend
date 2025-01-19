@@ -6,10 +6,10 @@ import jwt_decode from 'jwt-decode';
 import { LogService } from './log.service';
 
 interface DecodedToken {
-  nameid: string; // Kullanıcı ID'si
-  role: string;   // Kullanıcı rolü
-  email: string;  // Kullanıcı e-posta adresi
-  exp: number;    // Token son kullanma zamanı
+  nameid: string; 
+  role: string;   
+  email: string; 
+  exp: number; 
 }
 
 @Injectable({
@@ -21,17 +21,14 @@ export class AuthService {
 
   constructor(private http: HttpClient, private router: Router, private logService: LogService) {}
 
-  // Kullanıcı giriş metodu
   login(credentials: { email: string; password: string }): Observable<{ token: string }> {
     return this.http.post<{ token: string }>(`${this.apiUrl}/login`, credentials);
   }
 
-  // Kullanıcı kayıt metodu
   register(email: string, password: string): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/register`, { email, password });
   }
 
-  // Token decode metodu
   private decodeToken(): DecodedToken | null {
     const token = localStorage.getItem('token');
     if (!token) {
@@ -65,7 +62,6 @@ export class AuthService {
   }
   
 
-  // Kullanıcı ID'sini döndürür
   getDecodedTokenUserId(): number | null {
     const decodedToken = this.decodeToken();
     if (!decodedToken || !decodedToken.nameid) {
@@ -76,16 +72,36 @@ export class AuthService {
     return Number(decodedToken.nameid);
   }
 
-  // Kullanıcı çıkış yapar
   logout(): void {
     localStorage.removeItem('token');
     this.roleSubject.next(null);
     this.router.navigate(['/login']);
   }
 
-  // Kullanıcının giriş yapıp yapmadığını kontrol eder
   isAuthenticated(): boolean {
     const token = localStorage.getItem('token');
     return !!token;
   }
+  getUserId(): number {
+    const userData = this.getUserData();
+    return userData ? userData.userId : 0; 
+  }
+
+  getUserEmail(): string {
+    const userData = this.getUserData();
+    return userData ? userData.userMail : '';
+  }
+  private getUserData(): any {
+    const userData = localStorage.getItem('user');
+    return userData ? JSON.parse(userData) : null;
+  }
+
+  setUserData(user: any): void {
+    localStorage.setItem('user', JSON.stringify(user));
+  }
+
+  getUserIdByEmail(email: string): Observable<number> {
+    return this.http.get<number>(`https://localhost:44330/api/User/GetUserIdByEmail?email=${email}`);
+  }
+  
 }

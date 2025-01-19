@@ -1,43 +1,63 @@
 <div class="container mt-5">
   <h2>Yeni Kullanıcı Ekle</h2>
   <form [formGroup]="userForm" (ngSubmit)="onSubmit()">
-    <!-- Email -->
     <div class="mb-3">
-      <label for="email" class="form-label">E-posta</label>
-      <input type="email" id="email" formControlName="email" class="form-control"
-        [ngClass]="{'is-invalid': userForm.get('email')?.invalid && userForm.get('email')?.touched}" />
-      <div *ngIf="userForm.get('email')?.invalid && userForm.get('email')?.touched" class="invalid-feedback">
+      <label for="userEmail" class="form-label">E-posta</label>
+      <input
+        type="email"
+        id="userEmail"
+        formControlName="UserEmail"
+        class="form-control"
+        [ngClass]="{'is-invalid': userForm.get('UserEmail')?.invalid && userForm.get('UserEmail')?.touched}"
+      />
+      <div *ngIf="userForm.get('UserEmail')?.invalid && userForm.get('UserEmail')?.touched" class="invalid-feedback">
         Geçerli bir e-posta adresi giriniz.
       </div>
     </div>
 
-    <!-- Şifre -->
     <div class="mb-3">
       <label for="password" class="form-label">Şifre</label>
-      <input type="password" id="password" formControlName="password" class="form-control"
-        [ngClass]="{'is-invalid': userForm.get('password')?.invalid && userForm.get('password')?.touched}" />
-      <div *ngIf="userForm.get('password')?.invalid && userForm.get('password')?.touched" class="invalid-feedback">
-        Şifre en az 8 karakter olmalıdır.
+      <input
+        type="password"
+        id="password"
+        formControlName="Password"
+        class="form-control"
+        [ngClass]="{'is-invalid': userForm.get('Password')?.invalid && userForm.get('Password')?.touched}"
+      />
+      <div *ngIf="userForm.get('Password')?.invalid && userForm.get('Password')?.touched" class="invalid-feedback">
+        <ul class="mb-0">
+          <li *ngIf="userForm.get('Password')?.errors?.required">Şifre gereklidir.</li>
+          <li *ngIf="userForm.get('Password')?.errors?.minimumLength">
+            Şifre en az 8 karakter uzunluğunda olmalıdır.
+          </li>
+          <li *ngIf="userForm.get('Password')?.errors?.specialCharacter">
+            Şifre en az bir özel karakter içermelidir (!@#$%^&* vb.).
+          </li>
+          <li *ngIf="userForm.get('Password')?.errors?.letter">Şifre en az bir harf içermelidir.</li>
+          <li *ngIf="userForm.get('Password')?.errors?.number">Şifre en az bir rakam içermelidir.</li>
+        </ul>
       </div>
     </div>
 
-    <!-- Rol -->
     <div class="mb-3">
-      <label for="role" class="form-label">Rol</label>
-      <select id="role" formControlName="userRole" class="form-select"
-        [ngClass]="{'is-invalid': userForm.get('userRole')?.invalid && userForm.get('userRole')?.touched}">
+      <label for="userRole" class="form-label">Rol</label>
+      <select
+        id="userRole"
+        formControlName="UserRole"
+        class="form-select"
+        [ngClass]="{'is-invalid': userForm.get('UserRole')?.invalid && userForm.get('UserRole')?.touched}"
+      >
         <option value="" disabled selected>Rol seçiniz</option>
         <option value="User">User</option>
         <option value="Admin">Admin</option>
       </select>
-      <div *ngIf="userForm.get('userRole')?.invalid && userForm.get('userRole')?.touched" class="invalid-feedback">
+      <div *ngIf="userForm.get('UserRole')?.invalid && userForm.get('UserRole')?.touched" class="invalid-feedback">
         Lütfen bir rol seçiniz.
       </div>
     </div>
 
-    <!-- Butonlar -->
-    <div class="d-flex justify-content-between">
-      <button type="submit" class="btn btn-success" [disabled]="userForm.invalid">
+    <div class="d-flex justify-content-start">
+      <button type="submit" class="btn btn-success me-2" [disabled]="userForm.invalid">
         Kaydet
       </button>
       <button type="button" class="btn btn-secondary" (click)="cancel()">
@@ -45,7 +65,6 @@
       </button>
     </div>
 
-    <!-- Uyarı Mesajı -->
     <div *ngIf="alertMessage" class="mt-3 alert" [ngClass]="alertClass">
       {{ alertMessage }}
     </div>

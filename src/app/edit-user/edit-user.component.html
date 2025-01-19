@@ -1,36 +1,62 @@
+<div class="container mt-5">
+  <h2>Kullanıcı Güncelle</h2>
+  <form [formGroup]="userForm" (ngSubmit)="onSubmit()">
+    <div class="mb-3">
+      <label for="email" class="form-label">E-posta</label>
+      <input
+        type="email"
+        id="email"
+        formControlName="UserEmail"
+        class="form-control"
+        [ngClass]="{'is-invalid': userForm.get('UserEmail')?.invalid && userForm.get('UserEmail')?.touched}"
+      />
+      <div *ngIf="userForm.get('UserEmail')?.invalid && userForm.get('UserEmail')?.touched" class="invalid-feedback">
+        Geçerli bir e-posta adresi giriniz.
+      </div>
+    </div>
 
-<html>
-  <div class="container mt-5">
-    <h2>Kullanıcı Güncelle</h2>
-    <form (ngSubmit)="onSubmit()">
-      <div class="mb-3">
-        <label for="name" class="form-label">Ad</label>
-        <input type="text" id="name" [(ngModel)]="user.name" name="name" class="form-control" required/>
+    <div class="mb-3">
+      <label for="password" class="form-label">Şifre</label>
+      <input
+        type="password"
+        id="password"
+        formControlName="Password"
+        class="form-control"
+        [ngClass]="{'is-invalid': userForm.get('Password')?.invalid && userForm.get('Password')?.touched}"
+      />
+      <div *ngIf="userForm.get('Password')?.invalid && userForm.get('Password')?.touched" class="invalid-feedback">
+        <ul class="mb-0">
+          <li *ngIf="userForm.get('Password')?.errors?.minimumLength">Şifre en az 8 karakter uzunluğunda olmalıdır.</li>
+          <li *ngIf="userForm.get('Password')?.errors?.specialCharacter">Şifre en az bir özel karakter içermelidir.</li>
+          <li *ngIf="userForm.get('Password')?.errors?.letter">Şifre en az bir harf içermelidir.</li>
+          <li *ngIf="userForm.get('Password')?.errors?.number">Şifre en az bir rakam içermelidir.</li>
+        </ul>
       </div>
-      <div class="mb-3">
-        <label for="surname" class="form-label">Soyad</label>
-        <input type="text" id="surname" [(ngModel)]="user.surname" name="surname" class="form-control" required/>
-      </div>
-      <div class="mb-3">
-        <label for="email" class="form-label">Email</label>
-        <input type="email" id="email" [(ngModel)]="user.email" name="email" class="form-control" required/>
-      </div>
-      <div class="mb-3">
-        <label for="password" class="form-label">Şifre</label>
-        <input type="password" id="password" [(ngModel)]="user.password" name="password" class="form-control" required/>
-      </div>
-      <div class="mb-3">
-        <label for="role" class="form-label">Rol</label>
-        <input type="text" id="role" [(ngModel)]="user.userRole" name="role" class="form-control" required/>
-      </div>
-      <div class="mb-3">
-        <label for="adres" class="form-label">Adres</label>
-        <textarea id="adres" [(ngModel)]="user.adres" name="adres" class="form-control"></textarea>
-      </div>
-      <button type="button" class="btn btn-success me-2" (click)="onSubmit()">Güncelle</button>
-      <button type="button" (click)="cancel()" class="btn btn-secondary">İptal</button>
-    </form>
-  </div>  
-</html>
+    </div>
 
+    <div class="mb-3">
+      <label for="userRole" class="form-label">Rol</label>
+      <select
+        id="userRole"
+        formControlName="UserRole"
+        class="form-select"
+        [ngClass]="{'is-invalid': userForm.get('UserRole')?.invalid && userForm.get('UserRole')?.touched}"
+      >
+        <option value="" disabled selected>Rol seçiniz</option>
+        <option value="User">User</option>
+        <option value="Admin">Admin</option>
+      </select>
+      <div *ngIf="userForm.get('UserRole')?.invalid && userForm.get('UserRole')?.touched" class="invalid-feedback">
+        Lütfen bir rol seçiniz.
+      </div>
+    </div>
 
+    <div class="d-flex justify-content-start">
+      <button type="submit" class="btn btn-success me-2" [disabled]="userForm.invalid">Güncelle</button>
+      <button type="button" class="btn btn-secondary" (click)="cancel()">İptal</button>
+    </div>
+  </form>
+  <div *ngIf="alertMessage" [class]="'alert ' + alertClass" role="alert">
+    {{ alertMessage }}
+  </div>
+</div>

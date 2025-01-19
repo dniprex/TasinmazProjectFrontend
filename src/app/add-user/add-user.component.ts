@@ -2,16 +2,16 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { UserService } from '../services/user.service';
-
+import { passwordValidator } from '../users/password.validator';
 @Component({
   selector: 'app-add-user',
   templateUrl: './add-user.component.html',
   styleUrls: ['./add-user.component.css']
 })
 export class AddUserComponent implements OnInit {
-  userForm: FormGroup; // Form tanımı
-  alertMessage: string | null = null; // Uyarı mesajı için
-  alertClass: string = 'alert-light'; // Uyarı sınıfı için
+  userForm: FormGroup; 
+  alertMessage: string | null = null; 
+  alertClass: string = 'alert-light'; 
 
   constructor(
     private fb: FormBuilder,
@@ -20,36 +20,41 @@ export class AddUserComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // Form grubu oluşturma
     this.userForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]], // E-posta
-      password: ['', [Validators.required, Validators.minLength(8)]], // Şifre
-      userRole: ['User', Validators.required], // Kullanıcı rolü, varsayılan olarak 'User'
+      UserEmail: ['', [Validators.required, Validators.email]], 
+      Password: ['', [Validators.required, passwordValidator]], 
+      UserRole: ['User', Validators.required], 
     });
+
   }
 
   onSubmit(): void {
     if (this.userForm.valid) {
-      // Formdan alınan veriyi API'ye gönder
-      this.userService.createUser(this.userForm.value).subscribe(
+      const formValue = this.userForm.value;
+  
+      console.log('Gönderilen veri:', formValue);
+  
+      this.userService.createUser(formValue).subscribe(
         (response) => {
           console.log('Kullanıcı başarıyla eklendi!', response);
           this.showAlert('Kullanıcı başarıyla eklendi!', 'alert-success');
-          this.router.navigate(['/users']); // Kullanıcılar ekranına yönlendirme
+          this.router.navigate(['/users']);
         },
         (error) => {
           console.error('Kullanıcı eklenirken hata oluştu:', error);
+          console.error('Hata mesajı:', error.error.message); 
           const errorMessage = error.error.message || 'Kullanıcı eklenirken bir hata oluştu. Lütfen tekrar deneyin.';
           this.showAlert(errorMessage, 'alert-danger');
         }
       );
+      
     } else {
       this.showAlert('Formdaki hataları düzeltin ve tekrar deneyin.', 'alert-danger');
     }
   }
-
+  
   cancel(): void {
-    // Kullanıcılar ekranına yönlendirme
+
     this.router.navigate(['/users']);
   }
 
@@ -57,7 +62,6 @@ export class AddUserComponent implements OnInit {
     this.alertMessage = message;
     this.alertClass = cssClass;
 
-    // 5 saniye sonra uyarıyı gizle
     setTimeout(() => {
       this.alertMessage = null;
     }, 5000);

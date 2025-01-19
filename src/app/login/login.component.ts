@@ -44,36 +44,73 @@ export class LoginComponent {
   
           try {
             const decodedToken = jwt_decode<{ nameid: string; role: string; email: string }>(token);
-            const userId = decodedToken.nameid; // nameid üzerinden kullanıcı ID'si alınır
+            const userId = decodedToken.nameid;
             const userRole = decodedToken.role;
             const userEmail = decodedToken.email;
-          
-            console.log('Kullanıcı Rolü:', userRole);
-            console.log('Kullanıcı ID:', userId);
-            console.log('Kullanıcı Mail:', userEmail);
+  
+            console.log('Kullanıcı bilgileri:', { userId, userRole, userEmail });
+  
+            const log = {
+              userId: Number(userId),
+              userMail: userEmail || 'unknown',
+              durum: 'Başarılı',
+              islemTip: 'Giriş Yapma',
+              aciklama: 'Giriş yapıldı.'
+            };
+            console.log('Gönderilen başarılı giriş logu:', log);
+  
+            this.logService.addLog(log).subscribe({
+              next: () => console.log('Başarılı giriş log kaydedildi.'),
+              error: (logErr) => console.error('Başarılı giriş logu sırasında hata:', logErr),
+            });
+  
           } catch (error) {
             console.error('Token çözümleme hatası:', error);
           }
-          
   
           localStorage.setItem('token', token);
           this.router.navigate(['/ana-menu']);
           this.showAlert('Giriş başarılı!', 'alert-success');
         },
         error: (err) => {
-          console.error('Giriş başarısız:', err);
+          console.error('Giriş başarısız, hata:', err);
   
-          const log = {
-            userId: 1,
-            userMail: email || 'unknown',
-            durum: 'Başarısız',
-            islemTip: 'Giriş Yapma',
-            aciklama: 'Giriş başarısız oldu.'
-          };
+          console.log('Kullanıcı ID bulunması için API çağrısı yapılıyor...');
+          this.authService.getUserIdByEmail(email).subscribe({
+            next: (userId: number) => {
+              console.log('API çağrısı başarılı, userId:', userId);
   
-          this.logService.addLog(log).subscribe({
-            next: () => console.log('Başarısız giriş log kaydedildi.'),
-            error: (logErr) => console.error('Log kaydı sırasında hata oluştu:', logErr),
+              const log = {
+                userId: userId, 
+                userMail: email, 
+                durum: 'Başarısız',
+                islemTip: 'Giriş Yapma',
+                aciklama: 'Giriş başarısız oldu.'
+              };
+              console.log('Gönderilen başarısız giriş logu:', log);
+  
+              this.logService.addLog(log).subscribe({
+                next: () => console.log('Başarısız giriş log kaydedildi.'),
+                error: (logErr) => console.error('Başarısız giriş logu sırasında hata:', logErr),
+              });
+            },
+            error: (userIdError) => {
+              console.error('API çağrısı başarısız, varsayılan userId kullanılacak:', userIdError);
+  
+              const log = {
+                userId: Number(1), // Kullanıcı bulunamadığında varsayılan ID
+                userMail: email, 
+                durum: 'Başarısız',
+                islemTip: 'Giriş Yapma',
+                aciklama: 'Giriş başarısız oldu.'
+              };
+              console.log('Gönderilen varsayılan log:', log);
+  
+              this.logService.addLog(log).subscribe({
+                next: () => console.log('Başarısız giriş log kaydedildi.'),
+                error: (logErr) => console.error('Varsayılan giriş logu sırasında hata:', logErr),
+              });
+            }
           });
   
           this.showAlert(
@@ -83,10 +120,11 @@ export class LoginComponent {
         }
       });
     } else {
+      console.warn('Form geçersiz.');
       this.showAlert('Lütfen formu doğru bir şekilde doldurun.', 'alert-danger');
     }
-    
   }
+  
   
 
 

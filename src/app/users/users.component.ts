@@ -3,7 +3,6 @@ import { Router } from '@angular/router';
 import { UserService } from '../services/user.service';
 import { AuthService } from '../services/auth.service';
 import * as bootstrap from 'bootstrap';
-
 @Component({
   selector: 'app-users',
   templateUrl: './users.component.html',
@@ -62,17 +61,20 @@ export class UsersComponent implements OnInit, AfterViewInit {
       this.filteredUsers = this.users.slice();
     } else {
       this.filteredUsers = this.users.filter(user => {
-        const fullName = (user.name + " " + user.surname).toLowerCase();
-        return fullName.includes(this.searchQuery.toLowerCase()) ||
-          user.email.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-          user.userRole.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-          user.adres.toLowerCase().includes(this.searchQuery.toLowerCase());
+        const userId = (user.id || '').toString(); 
+        const email = (user.email || '').toLowerCase();
+        const userRole = (user.role || '').toLowerCase();
+  
+
+        return userId.includes(this.searchQuery.toLowerCase()) ||
+               email.includes(this.searchQuery.toLowerCase()) ||
+               userRole.includes(this.searchQuery.toLowerCase());
       });
     }
     this.currentPage = 1;
     this.updatePagedUsers();
   }
-
+  
   confirmDelete(): void {
     const selectedUsers = this.users.filter(user => user.selected);
 

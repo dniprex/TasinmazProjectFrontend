@@ -121,18 +121,15 @@ export class AnaMenuComponent implements OnInit {
     }
   }
   initializeMap(): void {
-    // Eğer map zaten oluşturulmuşsa, hedefi temizle
     if (this.map) {
-      this.map.setTarget(null); // Mevcut haritayı DOM'dan ayırır
+      this.map.setTarget(null);
     }
 
-    // OpenStreetMap Katmanı
     const osmLayer = new TileLayer({
       source: new OSM(),
-      visible: true, // Başlangıçta görünür
+      visible: true, 
     });
 
-    // Google Maps Katmanı
     const googleLayer = new TileLayer({
       source: new XYZ({
         url: 'http://mt1.google.com/vt/lyrs=r&x={x}&y={y}&z={z}',
@@ -230,7 +227,6 @@ export class AnaMenuComponent implements OnInit {
     switchContainer.appendChild(googleButton);
     this.map.getTargetElement().appendChild(switchContainer);
 
-    // Sol alt köşeye opaklık ayarları ekleme
     const opacityContainer = document.createElement('div');
     opacityContainer.style.position = 'absolute';
     opacityContainer.style.bottom = '10px';
@@ -245,7 +241,6 @@ export class AnaMenuComponent implements OnInit {
     opacityContainer.style.display = 'flex';
     opacityContainer.style.flexDirection = 'column';
 
-    // OpenStreetMap opaklık ayarı
     const osmOpacityLabel = document.createElement('label');
     osmOpacityLabel.textContent = 'OSM Opaklık:';
     osmOpacityLabel.style.display = 'block';
@@ -263,7 +258,6 @@ export class AnaMenuComponent implements OnInit {
       osmLayer.setOpacity(parseFloat(osmOpacityInput.value));
     });
 
-    // Google Maps opaklık ayarı
     const googleOpacityLabel = document.createElement('label');
     googleOpacityLabel.textContent = 'Google Maps Opaklık:';
     googleOpacityLabel.style.display = 'block';
@@ -294,7 +288,6 @@ export class AnaMenuComponent implements OnInit {
         const propertyData = feature.get('data');
         this.overlay.setPosition(coordinates);
 
-        // Popup içeriği
         this.popupElement.nativeElement.innerHTML = `
           <strong>${propertyData.tasinmazNitelik}</strong><br>
           ${propertyData.mahalle.ilce.il.ilAdi}, ${propertyData.mahalle.ilce.ilceAdi}<br>
@@ -316,7 +309,7 @@ export class AnaMenuComponent implements OnInit {
 
       this.filteredProperties = this.properties.filter(property => {
         const ilAdi = (property.mahalle && property.mahalle.ilce && property.mahalle.ilce.il && property.mahalle.ilce.il.ilAdi)
-          ? property.mahalle.ilce.il.ilAdi.toLocaleLowerCase('tr-TR') // Türkçe küçük harfe dönüştürüldü
+          ? property.mahalle.ilce.il.ilAdi.toLocaleLowerCase('tr-TR')
           : '';
 
         const ilceAdi = (property.mahalle && property.mahalle.ilce && property.mahalle.ilce.ilceAdi)
@@ -516,10 +509,10 @@ export class AnaMenuComponent implements OnInit {
       Aciklama: `Başarıyla çıkış yapıldı`
     }; this.logService.addLog(log).subscribe(
       () => {
-        console.log('Log başarıyla kaydedildi.');
+        console.log('Log başarıyla kaydedildi.', log);
       },
       (error) => {
-        console.error('Log kaydı sırasında hata oluştu:', error);
+        console.error('Log kaydı sırasında hata oluştu:', log);
       }
     );
 

@@ -61,7 +61,6 @@
           <li class="nav-item">
             <a class="nav-link active" aria-current="page" href="#">Mevcut Taşınmazlar</a>
           </li>
-          <!-- Sadece admin kullanıcılara gösterilecek -->
           <li class="nav-item" *ngIf="userRole === 'Admin'">
             <a class="nav-link" routerLink='/log'>Log İşlemleri</a>
           </li>

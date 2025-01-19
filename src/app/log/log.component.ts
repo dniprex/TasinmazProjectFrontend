@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { LogService } from '../services/log.service';
 import { AuthService } from '../services/auth.service';
-import * as XLSX from 'xlsx'; // XLSX kütüphanesi
-import * as FileSaver from 'file-saver'; // FileSaver kütüphanesi
+import * as XLSX from 'xlsx'; 
+import * as FileSaver from 'file-saver';
 
 @Component({
   selector: 'app-log',
@@ -54,7 +54,9 @@ export class LogComponent implements OnInit {
       Durum: log.durum || '',
       İşlem_Tipi: log.islemTip || '',
       Açıklama: log.aciklama || '',
-      Tarih: log.tarihSaat ? new Date(log.tarihSaat).toLocaleDateString() : ''
+      Tarih_Saat: log.tarihSaat
+      ? `${new Date(log.tarihSaat).toLocaleDateString()} ${new Date(log.tarihSaat).toLocaleTimeString()}`
+      : '',
     }));
 
     const worksheet = XLSX.utils.json_to_sheet(dataToExport);

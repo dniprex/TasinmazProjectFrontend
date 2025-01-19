@@ -42,7 +42,8 @@
       color: #6c757d; /* Daha açık gri yazı */
     }
 
-    .logout-button {
+    .logout-button,
+    .export-button {
       background-color: white;
       color: black;
       border: 1px solid #ccc;
@@ -53,7 +54,8 @@
       gap: 5px;
     }
 
-    .logout-button:hover {
+    .logout-button:hover,
+    .export-button:hover {
       background-color: #f8f8f8;
       color: #000;
       border-color: #bbb;
@@ -93,7 +95,7 @@
       <div class="card-body">
         <div class="d-flex justify-content-between mb-3">
           <h3 class="mb-0">Log İşlemleri</h3>
-          <button class="btn btn-success" (click)="exportToExcel()">
+          <button class="export-button" (click)="exportToExcel()">
             <i class="fas fa-file-excel"></i> Excel'e Aktar
           </button>
         </div>

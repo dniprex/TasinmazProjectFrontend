@@ -322,7 +322,7 @@ export class AddTasinmazComponent implements OnInit {
     }
     if (isNaN(Number(this.ada)) || this.ada.trim() === '') {
       this.showAlert('Ada alanı yalnızca sayısal değer olmalıdır.', 'alert-danger');
-      return; // Form gönderimini durdur
+      return; 
     }
 
     const newProperty = {
