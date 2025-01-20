@@ -6,28 +6,25 @@
     background-color: #f9f9f9; /* Daha açık gri */
 }
 
+.table-striped td {
+    color: #000000; /* Siyah yazı */
+}
 .table-striped th {
     background-color: #000000; /* Siyah */
     color: #ffffff; /* Beyaz yazı */
 }
 
-.table-striped td {
-    color: #000000; /* Siyah yazı */
-}
-
-/* Pagination için genel renk ayarları */
 .pagination .page-item .page-link {
-    background-color: #f0f0f0; /* Açık gri renk */
-    color: #198754; /* Yeşil yazı */
-    border: 1px solid #198754; /* Yeşil kenarlık */
-}
+    background-color: #f0f0f0; /* Açık gri */
+    color: black; /* Siyah yazı */
+    border: 1px solid #ccc; /* Gri kenarlık */
+  }
 
-.pagination .page-item:hover .page-link {
-    background-color: #d4edda; /* Daha açık yeşil */
-    color: #155724; /* Daha koyu yeşil yazı */
-    border-color: #198754; /* Yeşil kenarlık */
+.pagination .page-item.active .page-link {
+  background-color: #198754; /* Yeşil */
+  color: #ffffff; /* Beyaz yazı */
+  border-color: #198754; /* Yeşil kenarlık */
 }
-
 .pagination .page-item.active .page-link {
     background-color: #198754; /* Aktif durumda arka plan (yeşil) */
     color: #ffffff; /* Aktif durumda yazı (beyaz) */
@@ -35,10 +32,10 @@
 }
 
 .pagination .page-item.disabled .page-link {
-    background-color: #e9ecef; /* Devre dışı arka plan (gri) */
-    color: #6c757d; /* Devre dışı yazı rengi (açık gri) */
-    border-color: #ddd; /* Devre dışı kenarlık (açık gri) */
-}
+    background-color: #e9ecef; /* Gri */
+    color: #6c757d; /* Açık gri yazı */
+    border-color: #ddd; /* Gri kenarlık */
+  }
 .page-item.active .page-link {
   background-color: #198754 !important; /* Yeşil arka plan */
   color: #ffffff !important; /* Beyaz yazı */
@@ -46,7 +43,6 @@
 }
 
 
-/* Butonlar için düzenlemeler */
 .action-buttons button {
     background-color: white;
     color: black;
@@ -68,7 +64,6 @@
     height: 16px;
 }
 
-/* Çıkış düğmesi */
 .logout-button {
     background-color: white;
     color: black;

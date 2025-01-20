@@ -19,6 +19,9 @@ import { Style, Icon } from 'ol/style';
 import Overlay from 'ol/Overlay';
 import XYZ from "ol/source/XYZ";
 import jwt_decode from 'jwt-decode';
+import ScaleLine from 'ol/control/ScaleLine';
+import { defaults as defaultControls } from 'ol/control';
+
 @Component({
   selector: 'app-ana-menu',
   templateUrl: './ana-menu.component.html',
@@ -138,6 +141,13 @@ export class AnaMenuComponent implements OnInit {
     });
 
     const vectorSource = new VectorSource();
+    const scaleLineControl = new ScaleLine({
+  units: 'metric', // Metrik birimlerde gösterim
+  bar: true,       // Çubuk şeklinde ölçek
+  steps: 4,        // Çubuk bölümlendirme
+  text: true,      // Metin ile açıklama
+  minWidth: 100,   // Minimum genişlik
+});
 
     this.filteredProperties.forEach((property) => {
       if (property.koordinatBilgisi) {
@@ -169,6 +179,7 @@ export class AnaMenuComponent implements OnInit {
         center: fromLonLat([28.9784, 41.0082]),
         zoom: 6,
       }),
+      controls: defaultControls().extend([scaleLineControl]),
     });
 
     this.overlay = new Overlay({

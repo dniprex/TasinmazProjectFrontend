@@ -25,7 +25,7 @@
     right: 10px;
     z-index: 1000;
     display: flex;
-    gap: 5px;
+    gap: 10px;
   }
   
   .layer-switcher button {
@@ -45,4 +45,7 @@
     background-color: #6c757d;
     color: white;
   }
+  .text-center {
+    margin-bottom: 150px; /* Daha fazla üst boşluk */
+}
   

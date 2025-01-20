@@ -75,4 +75,18 @@
 .table.table-striped td {
   color: #000000 !important;
 }
+.page-link {
+  color: black; /* Yazı rengini siyah yap */
+}
+
+.page-link:hover {
+  color: #000; /* Hover sırasında yazı rengini siyah yap */
+}
+
+.page-item.disabled .page-link {
+  color: gray; /* Disabled durumunda gri renk olabilir */
+}
+
+
+
 
