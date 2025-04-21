@@ -53,15 +53,15 @@ export class AnaMenuComponent implements OnInit {
 
   ngOnInit(): void {
     this.deleteModal = new bootstrap.Modal(document.getElementById('deleteConfirmationModal') as HTMLElement);
-  
+
     const token = localStorage.getItem('token');
     if (token) {
       try {
-        const decodedToken: any = jwt_decode(token); 
-        this.userRole = decodedToken.role || null; 
+        const decodedToken: any = jwt_decode(token);
+        this.userRole = decodedToken.role || null;
         this.userId = decodedToken.nameid || null;
         this.userMail = decodedToken.email || null;
-  
+
         console.log("Kullanıcı Rolü:", this.userRole);
         console.log("Kullanıcı ID:", this.userId);
         console.log("Kullanıcı Mail:", this.userMail);
@@ -77,13 +77,13 @@ export class AnaMenuComponent implements OnInit {
       this.userId = null;
       this.userMail = null;
     }
-  
+
     this.propertyService.getProperties().subscribe(
       (data) => {
         console.log("API Verisi:", data);
         if (Array.isArray(data) && data.length > 0) {
           if (this.userRole === 'Admin') {
-            this.properties = data; 
+            this.properties = data;
           } else if (this.userRole === 'User') {
             if (this.userId !== null) {
               this.properties = data.filter((property) => String(property.userId) === String(this.userId));
@@ -96,7 +96,7 @@ export class AnaMenuComponent implements OnInit {
             console.warn("Bilinmeyen rol.");
             this.properties = [];
           }
-  
+
           this.filteredProperties = this.properties.slice();
           console.log("Filtrelenmiş Taşınmazlar:", this.filteredProperties);
           this.updatePagedProperties();
@@ -112,7 +112,7 @@ export class AnaMenuComponent implements OnInit {
       }
     );
   }
-  
+
   openDeleteModal(): void {
     if (this.deleteModal) {
       this.deleteModal.show();
@@ -130,24 +130,24 @@ export class AnaMenuComponent implements OnInit {
 
     const osmLayer = new TileLayer({
       source: new OSM(),
-      visible: true, 
+      visible: true,
     });
 
     const googleLayer = new TileLayer({
       source: new XYZ({
-        url: 'http://mt1.google.com/vt/lyrs=r&x={x}&y={y}&z={z}',
+        url: 'https://mt1.google.com/vt/lyrs=r&x={x}&y={y}&z={z}',
       }),
       visible: false,
     });
 
     const vectorSource = new VectorSource();
     const scaleLineControl = new ScaleLine({
-  units: 'metric', // Metrik birimlerde gösterim
-  bar: true,       // Çubuk şeklinde ölçek
-  steps: 4,        // Çubuk bölümlendirme
-  text: true,      // Metin ile açıklama
-  minWidth: 100,   // Minimum genişlik
-});
+      units: 'metric', // Metrik birimlerde gösterim
+      bar: true,       // Çubuk şeklinde ölçek
+      steps: 4,        // Çubuk bölümlendirme
+      text: true,      // Metin ile açıklama
+      minWidth: 100,   // Minimum genişlik
+    });
 
     this.filteredProperties.forEach((property) => {
       if (property.koordinatBilgisi) {

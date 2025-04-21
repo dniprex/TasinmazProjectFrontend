@@ -148,7 +148,7 @@ export class AddTasinmazComponent implements OnInit {
     // Google Maps Katmanı
     this.googleLayer = new TileLayer({
         source: new XYZ({
-            url: 'http://mt1.google.com/vt/lyrs=r&x={x}&y={y}&z={z}',
+            url: 'https://mt1.google.com/vt/lyrs=r&x={x}&y={y}&z={z}',
             maxZoom: 20,
         }),
         visible: this.googleLayerVisible, // Başlangıçta Google Maps kapalı
@@ -315,11 +315,14 @@ export class AddTasinmazComponent implements OnInit {
     this.userId = this.authService.getDecodedTokenUserId();
     this.userMail = this.authService.getDecodedTokenEmail();
 
-    if (!this.tasinmazIsim || !this.selectedMahalle || !this.parsel) {
+    // Zorunlu alanların kontrolü
+    if (!this.tasinmazIsim || !this.selectedMahalle || !this.parsel || !this.koordinat) {
       this.showAlert('Lütfen tüm zorunlu alanları doldurun.', 'alert-warning');
       console.warn('Eksik bilgiler nedeniyle işlem yapılmadı.');
       return;
     }
+
+    // Ada alanının sayısal değer olup olmadığını kontrol etme
     if (isNaN(Number(this.ada)) || this.ada.trim() === '') {
       this.showAlert('Ada alanı yalnızca sayısal değer olmalıdır.', 'alert-danger');
       return; 
@@ -337,7 +340,7 @@ export class AddTasinmazComponent implements OnInit {
     };
 
     console.log('Gönderilecek taşınmaz verisi:', newProperty);
-    console.log("USER ID:" + this.userId)
+    console.log("USER ID:" + this.userId);
     this.propertyService.addProperty(newProperty).subscribe(
       (response) => {
         console.log('Taşınmaz başarıyla eklendi:', response);
@@ -366,11 +369,12 @@ export class AddTasinmazComponent implements OnInit {
         };
 
         this.logService.addLog(log).subscribe();
-        const errorMessage = error.error.message || 'Hata oluştu.Lütfen doğru değerler girin.';
+        const errorMessage = error.error.message || 'Hata oluştu. Lütfen doğru değerler girin.';
         this.showAlert(errorMessage, 'alert-danger');
       }
     );
   }
+
   cancel(): void {
     this.router.navigate(['/ana-menu']);
   }
